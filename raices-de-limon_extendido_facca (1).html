@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="costa">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAC CA · Raíces de Limón</title>
+<meta name="description" content="FAC CA es un espacio digital para conocer, valorar y compartir la cultura afrodescendiente de Limón: patrimonio, eventos y formas de apoyar el proyecto.">
+<meta property="og:title" content="FAC CA · Raíces de Limón">
+<meta property="og:description" content="Patrimonio, eventos y donaciones para sostener la cultura afrocostarricense de Limón.">
+<meta property="og:type" content="website">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NGO",
+  "name": "FAC CA - Fundación Afrodescendiente Cultural",
+  "url": "https://www.facca.org",
+  "description": "Proyecto cultural juvenil dedicado a la cultura afrodescendiente de Limón, Costa Rica.",
+  "address": { "@type": "PostalAddress", "addressLocality": "Limón", "addressCountry": "CR" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "Feria de la Persona Negra y la Cultura Afrocostarricense",
+  "startDate": "2026-08-09",
+  "location": { "@type": "Place", "name": "Parque Vargas", "address": "Limón, Costa Rica" },
+  "organizer": { "@type": "Organization", "name": "FAC CA" }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --verde:#1C5C43;
+  --verde-deep:#123D2C;
+  --amarillo:#F5B942;
+  --rojo:#C13B2A;
+  --negro:#17130F;
+  --menta:#BADFD2;
+  --amarillo-suave:#F6DFA6;
+  --turquesa:#5FB8B0;
+  --coral:#F3AC90;
+  --arena:#F3E9D2;
+  --arena-light:#FAF4E6;
+  --ink:#241C15;
+  --paper:#FFFDF7;
+  --paper-2:#FBF2DE;
+  --line: rgba(23,19,15,.12);
+  --radius-organic: 62% 38% 55% 45% / 45% 55% 42% 58%;
+  --shadow-soft: 0 18px 40px -20px rgba(23,19,15,.35);
+  --ease: cubic-bezier(.22,.9,.3,1);
+}
+[data-theme="costa"]{ --accent:var(--turquesa); --accent-soft:var(--menta); --accent-deep:#2E7A72; }
+[data-theme="carnaval"]{ --accent:var(--coral); --accent-soft:var(--amarillo-suave); --accent-deep:#B65A3C; }
+[data-theme="selva"]{ --accent:var(--verde); --accent-soft:var(--menta); --accent-deep:var(--verde-deep); }
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  margin:0;
+  font-family:'Manrope', sans-serif;
+  color:var(--ink);
+  background:var(--arena-light);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3, .display{ font-family:'Unbounded', sans-serif; letter-spacing:-.01em; margin:0; }
+.mono{ font-family:'Space Mono', monospace; }
+p{ line-height:1.65; color:#463A2C; }
+a{ color:inherit; }
+button{ font-family:inherit; cursor:pointer; }
+:focus-visible{ outline:3px solid var(--accent-deep); outline-offset:3px; border-radius:6px; }
+
+.skip-link{
+  position:absolute; left:12px; top:-60px; z-index:200;
+  background:var(--negro); color:var(--paper); padding:10px 16px; border-radius:8px;
+  transition: top .2s var(--ease);
+}
+.skip-link:focus{ top:12px; }
+
+.eyebrow{
+  font-family:'Space Mono', monospace;
+  font-size:.72rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--accent-deep);
+  display:inline-flex;
+  align-items:center;
+  gap:.5em;
+}
+.eyebrow::before{ content:""; width:18px; height:2px; background:var(--accent-deep); display:inline-block; }
+
+/* ============ BACKGROUND SCENE ============ */
+.bg-scene{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.bg-texture{
+  position:absolute; inset:0;
+  opacity:.5;
+  background-image: repeating-linear-gradient(115deg, rgba(23,19,15,.035) 0 2px, transparent 2px 26px);
+}
+.bg-glow{
+  position:absolute; width:60vw; height:60vw; border-radius:50%;
+  background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+  opacity:.35; filter:blur(10px);
+  top:-15vw; right:-15vw;
+  transition: background .6s var(--ease);
+}
+.leaf{
+  position:absolute; bottom:-40px; opacity:.55;
+  animation: drift linear infinite;
+  will-change: transform;
+}
+@keyframes drift{
+  0%{ transform:translateY(0) translateX(0) rotate(0deg); }
+  50%{ transform:translateY(-52vh) translateX(30px) rotate(140deg); }
+  100%{ transform:translateY(-108vh) translateX(-20px) rotate(280deg); }
+}
+.waves{ position:absolute; left:0; right:0; bottom:0; height:190px; }
+.wave-path{ animation: wave-move 18s linear infinite; }
+.wave-path.slow{ animation-duration:26s; opacity:.55; }
+@keyframes wave-move{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce){
+  .leaf, .wave-path, .root-line, *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+  html{ scroll-behavior:auto; }
+}
+
+/* ============ NAV ============ */
+.nav{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px clamp(18px,4vw,44px);
+  background:rgba(250,244,230,.82);
+  backdrop-filter: blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{ display:flex; align-items:center; gap:12px; background:none; border:none; padding:0; }
+.brand-mark{ width:38px; height:38px; flex:none; }
+.brand-text{ text-align:left; }
+.brand-text .name{ font-family:'Unbounded'; font-weight:700; font-size:.98rem; line-height:1; }
+.brand-text .tag{ font-family:'Space Mono'; font-size:.62rem; letter-spacing:.08em; color:var(--accent-deep); }
+
+.nav-links{ display:flex; gap:4px; list-style:none; margin:0; padding:0; }
+.nav-links button{
+  background:none; border:none; padding:9px 13px; border-radius:999px;
+  font-size:.85rem; font-weight:600; color:var(--ink); opacity:.72;
+  transition: all .25s var(--ease);
+}
+.nav-links button:hover{ opacity:1; background:var(--accent-soft); }
+.nav-links button.active{ opacity:1; background:var(--accent); color:var(--paper); }
+
+.nav-right{ display:flex; align-items:center; gap:14px; }
+.btn-donate-nav{
+  background:var(--rojo); color:var(--paper); border:none; padding:10px 18px;
+  border-radius:999px; font-weight:800; font-size:.85rem; box-shadow:var(--shadow-soft);
+  transition: transform .2s var(--ease);
+}
+.btn-donate-nav:hover{ transform:translateY(-2px); }
+@media (max-width:520px){ .btn-donate-nav{ padding:9px 14px; font-size:.78rem; } }
+.theme-picker{ display:flex; gap:6px; align-items:center; background:var(--paper); border:1px solid var(--line); padding:5px; border-radius:999px; }
+.theme-dot{ width:20px; height:20px; border-radius:50%; border:2px solid transparent; padding:0; }
+.theme-dot[data-t="costa"]{ background:var(--turquesa); }
+.theme-dot[data-t="carnaval"]{ background:var(--coral); }
+.theme-dot[data-t="selva"]{ background:var(--verde); }
+.theme-dot.active{ border-color:var(--negro); }
+.menu-toggle{ display:none; background:var(--accent); border:none; width:42px; height:42px; border-radius:14px; color:var(--paper); }
+
+@media (max-width: 980px){
+  .nav-links{ display:none; }
+  .menu-toggle{ display:block; }
+  .nav-links.open{
+    display:flex; flex-direction:column; position:absolute; top:70px; left:16px; right:16px;
+    background:var(--paper); border:1px solid var(--line); border-radius:18px; padding:10px; box-shadow:var(--shadow-soft);
+  }
+}
+
+/* ============ LAYOUT / VIEWS ============ */
+main{ position:relative; z-index:1; min-height:100vh; }
+.view{ display:none; padding: 40px clamp(18px,5vw,64px) 90px; max-width:1180px; margin:0 auto; }
+.view.active{ display:block; animation: rise .55s var(--ease); }
+@keyframes rise{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:translateY(0); } }
+
+.section-head{ max-width:640px; margin-bottom:38px; }
+.section-head h2{ font-size:clamp(1.9rem,3.4vw,2.6rem); margin-top:10px; }
+.section-head p{ margin-top:12px; }
+
+/* ============ INICIO / HERO ============ */
+.hero{ display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; padding-top:24px; }
+.hero h1{ font-size:clamp(2.3rem,5vw,3.6rem); line-height:1.06; margin-top:14px; }
+.hero p{ margin-top:18px; font-size:1.05rem; max-width:46ch; }
+.hero-cta{ margin-top:26px; display:flex; gap:12px; flex-wrap:wrap; }
+.btn{
+  border:none; padding:13px 22px; border-radius:999px; font-weight:700; font-size:.9rem;
+  background:var(--negro); color:var(--paper); transition: transform .2s var(--ease), background .2s;
+}
+.btn:hover{ transform:translateY(-2px); }
+.btn.ghost{ background:transparent; border:2px solid var(--negro); color:var(--negro); padding:11px 20px; }
+.btn.accent{ background:var(--accent); color:var(--negro); }
+
+.hero-art{ position:relative; aspect-ratio:1/1; }
+.hero-art svg{ width:100%; height:100%; }
+
+@media (max-width:900px){ .hero{ grid-template-columns:1fr; } .hero-art{ order:-1; max-width:340px; margin:0 auto; } }
+
+/* CAMINO DE RAICES */
+.path-block{ margin-top:70px; }
+.path-track{ position:relative; padding:34px 10px 10px; }
+.path-track svg.connector{ position:absolute; left:0; top:52px; width:100%; height:40px; z-index:0; }
+.root-row{ position:relative; z-index:1; display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+.root-node{
+  background:var(--paper); border:1px solid var(--line); border-radius:26px 26px 10px 26px;
+  width:130px; padding:16px 10px 14px; display:flex; flex-direction:column; align-items:center; gap:8px;
+  box-shadow: var(--shadow-soft); transition: transform .3s var(--ease), background .3s;
+}
+.root-node:hover{ transform:translateY(-6px) rotate(-1deg); background:var(--accent-soft); }
+.root-node svg{ width:32px; height:32px; }
+.root-node span{ font-size:.74rem; font-weight:700; text-align:center; line-height:1.2; }
+@media (max-width:900px){ .root-row{ justify-content:center; } .path-track svg.connector{ display:none; } }
+
+/* ============ GALERÍA ============ */
+.gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+@media (max-width:900px){ .gallery-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .gallery-grid{ grid-template-columns:1fr; } }
+.frame{
+  background:var(--paper); border:1px solid var(--line); border-radius:4px 4px 22px 4px;
+  padding:10px; box-shadow:var(--shadow-soft); cursor:pointer; transition:transform .3s var(--ease);
+  transform:rotate(var(--tilt,0deg));
+}
+.frame:hover{ transform:rotate(0deg) translateY(-5px) scale(1.02); }
+.frame .art{ aspect-ratio:4/3; border-radius:2px 2px 16px 2px; overflow:hidden; }
+.frame .art svg{ width:100%; height:100%; display:block; }
+.frame .cap{ padding:12px 8px 6px; display:flex; justify-content:space-between; align-items:center; }
+.frame .cap b{ font-size:.88rem; }
+.frame .cap .mono{ font-size:.62rem; color:var(--accent-deep); }
+.video-card{ position:relative; }
+.play-badge{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+}
+.play-badge svg{ width:52px; height:52px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+
+/* ============ MISION / MURAL ============ */
+.mural{
+  position:relative; background:var(--paper-2);
+  border-radius: var(--radius-organic);
+  padding:clamp(30px,5vw,64px); margin-top:10px;
+  box-shadow:var(--shadow-soft);
+  display:grid; grid-template-columns:1fr 1fr; gap:34px;
+}
+.mural::before{
+  content:""; position:absolute; inset:10px; border:2px dashed var(--accent-deep); opacity:.35;
+  border-radius:inherit;
+}
+.mural h3{ font-size:1.15rem; }
+.mural .eyebrow{ margin-bottom:8px; }
+.mural-col p{ margin-top:10px; }
+@media (max-width:800px){ .mural{ grid-template-columns:1fr; } }
+
+/* ============ TESTIMONIOS ============ */
+.test-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+@media (max-width:900px){ .test-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .test-grid{ grid-template-columns:1fr; } }
+.test-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:20px;
+  display:flex; flex-direction:column; gap:12px; box-shadow:var(--shadow-soft);
+  transition: transform .3s var(--ease);
+}
+.test-card:hover{ transform:translateY(-6px); }
+.avatar{ width:56px; height:56px; border-radius:50%; overflow:hidden; }
+.avatar svg{ width:100%; height:100%; }
+.test-card .who b{ display:block; font-size:.92rem; }
+.test-card .who .mono{ font-size:.66rem; color:var(--accent-deep); }
+.test-card q{ font-style:normal; font-size:.9rem; line-height:1.55; quotes:none; }
+.disclaimer{ font-family:'Space Mono'; font-size:.68rem; color:#7a6c56; margin-top:6px; }
+
+/* ============ ARTE ============ */
+.art-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+@media (max-width:900px){ .art-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .art-grid{ grid-template-columns:1fr; } }
+.art-tile{ cursor:pointer; border-radius:14px; overflow:hidden; border:1px solid var(--line); background:var(--paper); box-shadow:var(--shadow-soft); }
+.art-tile .canvas{ aspect-ratio:1/1; }
+.art-tile .canvas svg{ width:100%; height:100%; display:block; }
+.art-tile .meta{ padding:12px 14px 16px; }
+.art-tile .meta b{ font-size:.92rem; display:block; }
+.art-tile .meta span{ font-size:.72rem; color:var(--accent-deep); font-family:'Space Mono'; }
+
+/* ============ BIBLIOTECA ============ */
+.tabs{ display:flex; gap:10px; margin-bottom:26px; flex-wrap:wrap; }
+.tab-btn{ background:var(--paper); border:1px solid var(--line); padding:10px 18px; border-radius:999px; font-weight:700; font-size:.85rem; }
+.tab-btn.active{ background:var(--negro); color:var(--paper); }
+.lib-grid{ display:none; grid-template-columns:repeat(2,1fr); gap:18px; }
+.lib-grid.active{ display:grid; }
+@media (max-width:700px){ .lib-grid{ grid-template-columns:1fr; } }
+.lib-card{ background:var(--paper); border:1px solid var(--line); border-left:5px solid var(--accent); border-radius:6px 16px 16px 6px; padding:18px 20px; }
+.lib-card b{ font-size:.98rem; }
+.lib-card p{ margin-top:6px; font-size:.87rem; }
+.lib-card .mono{ font-size:.65rem; color:var(--accent-deep); }
+
+/* ============ MODAL ============ */
+#modal-overlay{
+  position:fixed; inset:0; background:rgba(23,19,15,.55); backdrop-filter:blur(3px);
+  display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+}
+#modal-overlay.open{ display:flex; }
+.modal-box{
+  background:var(--paper); border-radius:22px; max-width:520px; width:100%; padding:28px;
+  box-shadow:0 30px 60px rgba(0,0,0,.35); position:relative; animation: popin .3s var(--ease);
+}
+@keyframes popin{ from{ opacity:0; transform:scale(.94) translateY(10px);} to{opacity:1; transform:scale(1) translateY(0);} }
+.modal-close{ position:absolute; top:14px; right:14px; background:var(--arena); border:none; width:32px; height:32px; border-radius:50%; font-size:1rem; }
+.modal-box .modal-art{ width:100%; aspect-ratio:16/10; border-radius:12px; overflow:hidden; margin-bottom:16px; }
+.modal-box .modal-art svg{ width:100%; height:100%; }
+.modal-box h3{ font-size:1.15rem; }
+.modal-box .mono{ font-size:.68rem; color:var(--accent-deep); }
+.modal-box p{ margin-top:10px; font-size:.9rem; }
+
+/* ============ FOOTER ============ */
+footer{
+  position:relative; z-index:1; background:var(--negro); color:var(--arena-light);
+  padding:56px clamp(18px,5vw,64px) 26px; margin-top:40px;
+  border-top-left-radius:44px; border-top-right-radius:44px;
+}
+.foot-grid{ display:grid; grid-template-columns:1.3fr 1fr 1fr 1fr; gap:34px; max-width:1180px; margin:0 auto; }
+@media (max-width:800px){ .foot-grid{ grid-template-columns:1fr 1fr; } }
+.foot-brand{ display:flex; gap:12px; align-items:center; }
+.foot-brand svg{ width:34px; height:34px; }
+.foot-brand .name{ font-family:'Unbounded'; font-weight:700; font-size:.95rem; }
+.foot-tag{ margin-top:10px; font-size:.82rem; color:#cfc4ab; max-width:26ch; }
+footer h4{ font-family:'Space Mono'; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--amarillo-suave); margin-bottom:12px; }
+footer ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:9px; }
+footer a{ text-decoration:none; font-size:.85rem; color:#e7ddc6; opacity:.85; }
+footer a:hover{ opacity:1; text-decoration:underline; }
+.social-row{ display:flex; gap:10px; }
+.social-row a{ width:36px; height:36px; border:1px solid rgba(255,255,255,.25); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.social-row svg{ width:16px; height:16px; }
+.foot-bottom{ max-width:1180px; margin:40px auto 0; padding-top:20px; border-top:1px solid rgba(255,255,255,.14); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:.75rem; color:#b7ab90; }
+.credit{ font-family:'Space Mono'; }
+
+/* ============ PATRIMONIO / EVENTOS / DONACIONES (nuevo) ============ */
+/* Breakpoints usados en todo el sitio: 320–479 base, 480–767, 768–1023, 1024+ */
+.chip-row{ display:flex; gap:8px; margin-bottom:26px; flex-wrap:wrap; }
+.chip{
+  background:var(--paper); border:1px solid var(--line); padding:9px 17px; border-radius:999px;
+  font-size:.82rem; font-weight:700; color:var(--ink); transition:all .2s var(--ease);
+}
+.chip.active{ background:var(--accent); color:var(--negro); border-color:var(--accent); }
+
+.pat-grid{ display:grid; grid-template-columns:1fr; gap:20px; }
+@media (min-width:600px){ .pat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (min-width:1024px){ .pat-grid{ grid-template-columns:repeat(3,1fr); } }
+.pat-card{
+  background:var(--paper); border:1px solid var(--line); border-radius:18px; overflow:hidden;
+  cursor:pointer; box-shadow:var(--shadow-soft); transition:transform .3s var(--ease);
+}
+.pat-card:hover{ transform:translateY(-6px); }
+.pat-card .art{ aspect-ratio:4/3; }
+.pat-card .art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.pat-card .body{ padding:14px 16px 18px; }
+.pat-card .cat{ font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); font-family:'Space Mono'; }
+.pat-card h3{ font-size:1rem; margin-top:4px; font-family:'Unbounded'; }
+.pat-card p{ font-size:.85rem; margin-top:6px; }
+
+.agenda-list{ display:flex; flex-direction:column; gap:14px; }
+.agenda-card{
+  display:grid; grid-template-columns:70px 1fr; gap:16px; align-items:center;
+  background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:14px;
+  box-shadow:var(--shadow-soft);
+}
+@media (min-width:768px){ .agenda-card{ grid-template-columns:80px 1fr auto; } }
+.agenda-card .date-block{ background:var(--arena-light); border-radius:12px; text-align:center; padding:10px 4px; }
+.agenda-card .date-block .d{ font-family:'Unbounded'; font-weight:800; font-size:1.4rem; color:var(--accent-deep); display:block; line-height:1; }
+.agenda-card .date-block .m{ font-family:'Space Mono'; font-size:.6rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#7a6c56; }
+.agenda-card .cat{ font-family:'Space Mono'; font-size:.66rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--accent-deep); }
+.agenda-card h3{ font-size:1rem; margin-top:2px; }
+.agenda-card .loc{ font-size:.82rem; color:#463A2C; margin-top:4px; }
+.agenda-card .btn{ padding:9px 16px; font-size:.78rem; margin-top:10px; }
+@media (min-width:768px){ .agenda-card .btn{ margin-top:0; } }
+
+.donate-wrap{ display:grid; grid-template-columns:1fr; gap:30px; }
+@media (min-width:900px){ .donate-wrap{ grid-template-columns:1.1fr .9fr; } }
+.benefit-list{ list-style:none; margin:20px 0 0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.benefit-list li{ display:flex; gap:12px; align-items:flex-start; }
+.benefit-list svg{ flex:none; width:24px; height:24px; color:var(--accent-deep); }
+.benefit-list b{ display:block; font-family:'Unbounded'; font-size:.95rem; }
+.benefit-list p{ font-size:.88rem; margin-top:2px; }
+.donate-card{ background:var(--paper); border:1px solid var(--line); border-radius:22px; padding:24px; box-shadow:var(--shadow-soft); }
+.amount-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+.amount-chip{ flex:1 1 auto; min-width:78px; background:var(--arena-light); border:2px solid var(--line); border-radius:12px; padding:12px 8px; font-weight:800; font-size:.86rem; text-align:center; }
+.amount-chip[aria-pressed="true"]{ border-color:var(--rojo); background:var(--amarillo-suave); }
+.pay-methods{ display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
+.pay-method{ flex:1 1 auto; min-width:96px; display:flex; align-items:center; justify-content:center; gap:8px; border:2px solid var(--line); border-radius:12px; padding:12px 8px; background:var(--arena-light); font-weight:700; font-size:.8rem; }
+.pay-method[aria-pressed="true"]{ border-color:var(--verde); background:var(--menta); }
+.pay-method svg{ width:16px; height:16px; }
+.donate-note{ font-size:.74rem; color:#7a6c56; margin-top:14px; }
+.donate-confirm{ margin-top:14px; font-size:.84rem; font-weight:700; display:none; }
+.donate-confirm.show{ display:block; }
+
+.newsletter-form{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.newsletter-form input{ flex:1 1 140px; padding:9px 12px; border-radius:10px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.08); color:var(--paper); font-size:.82rem; }
+.newsletter-form input::placeholder{ color:#b7ab90; }
+.newsletter-form button{ background:var(--turquesa); color:var(--negro); font-weight:800; padding:9px 14px; border-radius:10px; font-size:.8rem; border:none; }
+.newsletter-msg{ font-size:.76rem; color:var(--amarillo-suave); margin-top:8px; display:none; }
+.newsletter-msg.show{ display:block; }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">Saltar al contenido principal</a>
+
+<div class="bg-scene" aria-hidden="true">
+  <div class="bg-texture"></div>
+  <div class="bg-glow"></div>
+  <div id="leaf-field"></div>
+  <svg class="waves" viewBox="0 0 1600 190" preserveAspectRatio="none">
+    <path class="wave-path slow" d="M0,120 C 200,60 400,160 800,100 C 1200,40 1400,140 1600,90 L1600,190 L0,190 Z M1600,120 C 1800,60 2000,160 2400,100 C 2800,40 3000,140 3200,90 L3200,190 L1600,190 Z" fill="var(--menta)"/>
+    <path class="wave-path" d="M0,150 C 220,110 420,180 820,130 C 1220,80 1420,170 1600,130 L1600,190 L0,190 Z M1600,150 C 1820,110 2020,180 2420,130 C 2820,80 3020,170 3200,130 L3200,190 L1600,190 Z" fill="var(--turquesa)" opacity=".6"/>
+  </svg>
+</div>
+
+<header class="nav">
+  <button class="brand" data-goto="view-inicio" aria-label="Ir al inicio">
+    <svg class="brand-mark" viewBox="0 0 48 48"><circle cx="15" cy="13" r="7" fill="var(--amarillo)"/><path d="M14 34 C8 34 4 30 4 25 C4 20 8 17 12 17 C13 11 18 7 24 7 C30 7 35 11 36 17 C41 17 44 21 44 25 C44 30 40 34 34 34 Z" fill="var(--turquesa)"/><path d="M6 40 C12 36 18 42 24 38 C30 34 36 40 42 37" stroke="var(--verde)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+    <span class="brand-text"><span class="name">FAC CA</span><br><span class="tag">RAÍCES DE LIMÓN</span></span>
+  </button>
+
+  <ul class="nav-links" id="navLinks">
+    <li><button data-goto="view-inicio" class="active">Inicio</button></li>
+    <li><button data-goto="view-mision">Misión y visión</button></li>
+    <li><button data-goto="view-galeria">Galería</button></li>
+    <li><button data-goto="view-testimonios">Testimonios</button></li>
+    <li><button data-goto="view-arte">Arte</button></li>
+    <li><button data-goto="view-biblioteca">Biblioteca</button></li>
+    <li><button data-goto="view-patrimonio">Patrimonio</button></li>
+    <li><button data-goto="view-eventos">Eventos</button></li>
+    <li><button data-goto="view-donaciones">Donaciones</button></li>
+  </ul>
+
+  <div class="nav-right">
+    <button class="btn-donate-nav" data-goto="view-donaciones">Donar</button>
+    <div class="theme-picker" role="group" aria-label="Cambiar paleta de color">
+      <button class="theme-dot active" data-t="costa" title="Tema Costa" aria-label="Tema Costa"></button>
+      <button class="theme-dot" data-t="carnaval" title="Tema Carnaval" aria-label="Tema Carnaval"></button>
+      <button class="theme-dot" data-t="selva" title="Tema Selva" aria-label="Tema Selva"></button>
+    </div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="navLinks">☰</button>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ================= INICIO ================= -->
+  <section id="view-inicio" class="view active" tabindex="-1">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">FAC CA · Fundación Afrodescendiente Cultural</span>
+        <h1>Las raíces del pasado, sostenidas por las manos del futuro.</h1>
+        <p>FAC CA es un espacio digital hecho para que las juventudes de Limón —y de todo Costa Rica— conozcan, valoren y compartan la cultura afrodescendiente de la provincia: su historia, su música, su lengua y su gente. Cada sección de este sitio es una parada distinta en un mismo recorrido.</p>
+        <div class="hero-cta">
+          <button class="btn accent" data-goto="view-galeria">Entrar a la galería</button>
+          <button class="btn ghost" data-goto="view-mision">Conocer la misión</button>
+        </div>
+      </div>
+      <div class="hero-art">
+        <svg viewBox="0 0 400 400" fill="none">
+          <circle cx="200" cy="200" r="180" fill="var(--accent-soft)" opacity=".5"/>
+          <circle cx="290" cy="100" r="42" fill="var(--amarillo)"/>
+          <g stroke="var(--amarillo)" stroke-width="4" stroke-linecap="round" opacity=".8">
+            <path d="M290 34 L290 20"/><path d="M290 180 L290 166"/><path d="M354 100 L368 100"/><path d="M212 100 L226 100"/>
+            <path d="M336 46 L346 36"/><path d="M336 154 L346 164"/><path d="M244 46 L234 36"/>
+          </g>
+          <path d="M120 240 C120 170 150 120 156 90" stroke="var(--negro)" stroke-width="7" stroke-linecap="round" fill="none"/>
+          <g fill="var(--verde)">
+            <path d="M156 90 C130 78 100 84 84 70 C110 60 140 66 156 90Z"/>
+            <path d="M156 90 C138 66 138 36 122 20 C150 24 166 56 156 90Z"/>
+            <path d="M156 90 C182 74 212 76 230 60 C204 52 174 60 156 90Z"/>
+            <path d="M156 90 C168 62 194 46 200 24 C176 34 158 60 156 90Z"/>
+          </g>
+          <ellipse cx="118" cy="248" rx="20" ry="7" fill="var(--negro)" opacity=".18"/>
+          <path d="M300 210 C312 202 328 202 336 214 C324 212 316 216 312 222 C306 216 302 214 300 210Z" fill="var(--negro)"/>
+          <path d="M40 300 C120 262 280 262 360 300 L360 400 L40 400 Z" fill="var(--turquesa)" opacity=".85"/>
+          <path d="M20 322 C110 288 290 288 380 322 L380 400 L20 400 Z" fill="var(--verde)" opacity=".9"/>
+          <path d="M70 280 q70 -34 140 0" stroke="var(--paper)" stroke-width="3" fill="none" opacity=".55" stroke-linecap="round"/>
+          <path d="M190 300 q70 -34 140 0" stroke="var(--paper)" stroke-width="3" fill="none" opacity=".4" stroke-linecap="round"/>
+          <path d="M250 140 C260 132 274 132 280 142 C272 140 264 143 260 149 C255 143 252 141 250 140Z" fill="var(--paper)" opacity=".9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="path-block">
+      <span class="eyebrow">El camino de raíces</span>
+      <h2 style="margin-top:10px;font-size:1.5rem;">Tocá cada parada para comenzar tu recorrido</h2>
+      <div class="path-track">
+        <svg class="connector" viewBox="0 0 1000 40" preserveAspectRatio="none"><path d="M0,20 C150,0 250,40 400,20 C550,0 650,40 800,20 C880,10 940,25 1000,15" stroke="var(--accent)" stroke-width="3" fill="none" stroke-dasharray="1 14" stroke-linecap="round"/></svg>
+        <div class="root-row">
+          <button class="root-node" data-goto="view-inicio"><svg viewBox="0 0 32 32"><path d="M9 28 L9 14 C9 8 13 5 16 5 C19 5 23 8 23 14 L23 28" fill="none" stroke="var(--turquesa)" stroke-width="2.4" stroke-linecap="round"/><circle cx="16" cy="12" r="2.6" fill="var(--amarillo)"/><path d="M6 28 L26 28" stroke="var(--negro)" stroke-width="2" stroke-linecap="round"/></svg><span>Portal de inicio</span></button>
+          <button class="root-node" data-goto="view-mision"><svg viewBox="0 0 32 32"><path d="M4 16 C9 8 23 8 28 16 C23 24 9 24 4 16 Z" fill="none" stroke="var(--rojo)" stroke-width="2.2"/><circle cx="16" cy="16" r="4.2" fill="var(--amarillo)"/></svg><span>Misión y visión</span></button>
+          <button class="root-node" data-goto="view-galeria"><svg viewBox="0 0 32 32"><rect x="9" y="4" width="18" height="14" rx="2" fill="none" stroke="var(--verde)" stroke-width="2"/><rect x="5" y="10" width="18" height="14" rx="2" fill="var(--paper)" stroke="var(--rojo)" stroke-width="2.2"/><circle cx="10" cy="16" r="1.8" fill="var(--amarillo)"/><path d="M6 22 L12 17 L16 20 L23 13" stroke="var(--verde)" stroke-width="1.6" fill="none"/></svg><span>Galería viva</span></button>
+          <button class="root-node" data-goto="view-testimonios"><svg viewBox="0 0 32 32"><path d="M5 8 C5 6 6 5 8 5 L24 5 C26 5 27 6 27 8 L27 18 C27 20 26 21 24 21 L14 21 L8 27 L9 21 L8 21 C6 21 5 20 5 18 Z" fill="none" stroke="var(--coral)" stroke-width="2.2"/><circle cx="12" cy="13" r="1.4" fill="var(--negro)"/><circle cx="16" cy="13" r="1.4" fill="var(--negro)"/><circle cx="20" cy="13" r="1.4" fill="var(--negro)"/></svg><span>Voces y testimonios</span></button>
+          <button class="root-node" data-goto="view-arte"><svg viewBox="0 0 32 32"><path d="M16 5 C8 5 3 11 3 17 C3 23 8 26 12 24 C14 23 13 20 15 19 C17 18 20 20 23 19 C27 18 29 14 29 11 C29 7 23 5 16 5 Z" fill="none" stroke="var(--rojo)" stroke-width="2.2"/><circle cx="10" cy="13" r="1.6" fill="var(--amarillo)"/><circle cx="17" cy="10" r="1.6" fill="var(--turquesa)"/><circle cx="23" cy="14" r="1.6" fill="var(--verde)"/><circle cx="12" cy="20" r="1.6" fill="var(--coral)"/></svg><span>Arte</span></button>
+          <button class="root-node" data-goto="view-biblioteca"><svg viewBox="0 0 32 32"><path d="M16 8 C13 6 8 6 5 7 L5 24 C8 23 13 23 16 25 C19 23 24 23 27 24 L27 7 C24 6 19 6 16 8 Z" fill="none" stroke="var(--verde)" stroke-width="2.2"/><path d="M16 8 L16 25" stroke="var(--verde)" stroke-width="2"/></svg><span>Biblioteca</span></button>
+          <button class="root-node" data-goto="view-patrimonio"><svg viewBox="0 0 32 32"><path d="M6 14 L16 6 L26 14 L26 27 L6 27 Z" fill="none" stroke="var(--verde)" stroke-width="2.2"/><rect x="13" y="18" width="6" height="9" fill="var(--amarillo)"/></svg><span>Patrimonio</span></button>
+          <button class="root-node" data-goto="view-eventos"><svg viewBox="0 0 32 32"><rect x="5" y="8" width="22" height="19" rx="3" fill="none" stroke="var(--rojo)" stroke-width="2.2"/><path d="M5 13 L27 13" stroke="var(--rojo)" stroke-width="2"/><circle cx="11" cy="19" r="1.8" fill="var(--turquesa)"/><circle cx="16" cy="19" r="1.8" fill="var(--amarillo)"/><circle cx="21" cy="19" r="1.8" fill="var(--verde)"/></svg><span>Eventos</span></button>
+          <button class="root-node" data-goto="view-donaciones"><svg viewBox="0 0 32 32"><path d="M16 27 C16 27 5 20 5 12.5 C5 8 8.5 5 12 5 C14 5 15.5 6.5 16 8 C16.5 6.5 18 5 20 5 C23.5 5 27 8 27 12.5 C27 20 16 27 16 27Z" fill="var(--rojo)"/></svg><span>Donaciones</span></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GALERIA ================= -->
+  <!-- ================= MISION ================= -->
+  <section id="view-mision" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Mural de la comunidad</span>
+      <h2>Misión y visión de FAC CA</h2>
+    </div>
+    <div class="mural">
+      <div class="mural-col">
+        <span class="eyebrow">Misión</span>
+        <h3>Lo que hacemos</h3>
+        <p>Promover la cultura afrodescendiente mediante espacios digitales, educativos y culturales que permitan a los jóvenes conocer, valorar y compartir la identidad de Limón.</p>
+      </div>
+      <div class="mural-col">
+        <span class="eyebrow">Visión</span>
+        <h3>Hacia dónde vamos</h3>
+        <p>Ser una plataforma cultural que conecte a las nuevas generaciones con la historia, las tradiciones y los aportes de la comunidad afrodescendiente.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-galeria" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Galería viva</span>
+      <h2>Fotografías, arte y sonido de la costa</h2>
+      <p>Un muro digital con escenas ilustradas del día a día cultural de Limón. Las piezas visuales de esta galería son ilustraciones creadas para este prototipo. Tocá cualquiera para ver su historia completa.</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- ================= TESTIMONIOS ================= -->
+  <section id="view-testimonios" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Voces de Limón</span>
+      <h2>Testimonios de la comunidad</h2>
+      <p>Estos perfiles y citas son simulados para efectos de este prototipo; representan el tipo de voces que la plataforma busca dar a conocer.</p>
+    </div>
+    <div class="test-grid" id="testGrid"></div>
+  </section>
+
+  <!-- ================= ARTE ================= -->
+  <section id="view-arte" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Sala de arte</span>
+      <h2>Expresiones visuales afrocaribeñas</h2>
+      <p>Pinturas, textiles, tallas y fotografía documental inspirados en el arte de la costa. Tocá una obra para conocer su técnica y su historia.</p>
+    </div>
+    <div class="art-grid" id="artGrid"></div>
+  </section>
+
+  <!-- ================= BIBLIOTECA ================= -->
+  <section id="view-biblioteca" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Biblioteca</span>
+      <h2>Recursos para aprender y profundizar</h2>
+      <p>Contenidos organizados en tres colecciones. Elegí una para explorar sus recursos.</p>
+    </div>
+    <div class="tabs" id="libTabs">
+      <button class="tab-btn active" data-tab="cultura">Cultura</button>
+      <button class="tab-btn" data-tab="derechos">Derechos humanos</button>
+      <button class="tab-btn" data-tab="historia">Historia</button>
+    </div>
+    <div class="lib-grid active" id="lib-cultura"></div>
+    <div class="lib-grid" id="lib-derechos"></div>
+    <div class="lib-grid" id="lib-historia"></div>
+  </section>
+
+  <!-- ================= PATRIMONIO ================= -->
+  <section id="view-patrimonio" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Patrimonio</span>
+      <h2>Piezas y tradiciones que se conservan</h2>
+      <p>Un listado del patrimonio material e inmaterial de Limón. Filtrá por categoría y tocá una tarjeta para ver su ficha completa.</p>
+    </div>
+    <div class="chip-row" id="patChips" role="group" aria-label="Filtrar patrimonio por categoría">
+      <button class="chip active" data-cat="todo">Todo</button>
+      <button class="chip" data-cat="Sitios">Sitios</button>
+      <button class="chip" data-cat="Musical">Musical</button>
+      <button class="chip" data-cat="Culinario">Culinario</button>
+      <button class="chip" data-cat="Artesanía">Artesanía</button>
+      <button class="chip" data-cat="Oralidad">Oralidad</button>
+    </div>
+    <div class="pat-grid" id="patGrid"></div>
+  </section>
+
+  <!-- ================= EVENTOS ================= -->
+  <section id="view-eventos" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Calendario</span>
+      <h2>Próximos eventos</h2>
+      <p>Actividades comunitarias organizadas por FAC CA. Filtrá por mes para planear tu visita.</p>
+    </div>
+    <div class="chip-row" id="monthChips" role="group" aria-label="Filtrar eventos por mes">
+      <button class="chip active" data-month="todos">Todos</button>
+      <button class="chip" data-month="Agosto">Agosto</button>
+      <button class="chip" data-month="Setiembre">Setiembre</button>
+      <button class="chip" data-month="Octubre">Octubre</button>
+      <button class="chip" data-month="Noviembre">Noviembre</button>
+      <button class="chip" data-month="Diciembre">Diciembre</button>
+    </div>
+    <div class="agenda-list" id="agendaList"></div>
+  </section>
+
+  <!-- ================= DONACIONES ================= -->
+  <section id="view-donaciones" class="view" tabindex="-1">
+    <div class="section-head">
+      <span class="eyebrow">Donaciones</span>
+      <h2>Tu aporte sostiene este proyecto</h2>
+      <p>FAC CA es un proyecto cultural juvenil sin fines de lucro. Cada donación se destina a documentar historias, producir material educativo y organizar actividades gratuitas.</p>
+    </div>
+    <div class="donate-wrap">
+      <div>
+        <ul class="benefit-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-4.5-9.5-9C.5 8 3 4 7 4c2 0 3.8 1.2 5 3 1.2-1.8 3-3 5-3 4 0 6.5 4 4.5 8-2.5 4.5-9.5 9-9.5 9Z"/></svg><div><b>Historia oral</b><p>Grabación y transcripción de testimonios de la comunidad.</p></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2 3 7v6c0 5 4 8.5 9 9 5-.5 9-4 9-9V7l-9-5Z"/></svg><div><b>Material educativo</b><p>Recursos gratuitos para talleres de música, arte y lengua criolla.</p></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg><div><b>Actividades comunitarias</b><p>Eventos gratuitos y abiertos a jóvenes de toda la provincia.</p></div></li>
+        </ul>
+      </div>
+      <div class="donate-card">
+        <h3 style="font-size:1.05rem;">Elegí un monto</h3>
+        <div class="amount-row" id="amountRow" role="group" aria-label="Monto de la donación">
+          <button class="amount-chip" data-amount="5000" aria-pressed="false">₡5.000</button>
+          <button class="amount-chip" data-amount="15000" aria-pressed="false">₡15.000</button>
+          <button class="amount-chip" data-amount="30000" aria-pressed="false">₡30.000</button>
+          <button class="amount-chip" data-amount="libre" aria-pressed="false">Monto libre</button>
+        </div>
+        <h3 style="font-size:1.05rem; margin-top:18px;">Método de pago</h3>
+        <div class="pay-methods" id="payMethods" role="group" aria-label="Método de pago">
+          <button class="pay-method" data-method="PayPal" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 3h7c3 0 5 2 4.5 5-.5 3.3-3 5-6.5 5H9l-1 6H4L7 3Z"/></svg>PayPal</button>
+          <button class="pay-method" data-method="Stripe" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="5" width="20" height="14" rx="3"/></svg>Stripe</button>
+          <button class="pay-method" data-method="SINPE Móvil" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="2" width="12" height="20" rx="2"/><path d="M10 18h4"/></svg>SINPE Móvil</button>
+        </div>
+        <button class="btn accent" id="donateSubmit" style="width:100%; margin-top:20px;">Continuar con la donación</button>
+        <p class="donate-confirm" id="donateConfirm" role="status"></p>
+        <p class="donate-note">Prototipo educativo: este formulario no procesa pagos reales.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div class="foot-brand">
+        <svg viewBox="0 0 48 48"><circle cx="15" cy="13" r="7" fill="var(--amarillo)"/><path d="M14 34 C8 34 4 30 4 25 C4 20 8 17 12 17 C13 11 18 7 24 7 C30 7 35 11 36 17 C41 17 44 21 44 25 C44 30 40 34 34 34 Z" fill="var(--arena-light)"/><path d="M6 40 C12 36 18 42 24 38 C30 34 36 40 42 37" stroke="var(--turquesa)" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+        <span class="name">FAC CA</span>
+      </div>
+      <p class="foot-tag">Nuestra historia vive, nuestras raíces inspiran.</p>
+      <div class="social-row" style="margin-top:16px;">
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 9h3V5h-3c-2.2 0-4 1.8-4 4v2H7v4h3v6h4v-6h3l1-4h-4V9c0-.6.4-1 1-1z"/></svg></a>
+        <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="18" height="12" rx="4"/><path d="M10 9.5v5l5-2.5-5-2.5z" fill="currentColor" stroke="none"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4>Enlaces</h4>
+      <ul>
+        <li><button data-goto="view-inicio" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Inicio</button></li>
+        <li><button data-goto="view-galeria" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Galería</button></li>
+        <li><button data-goto="view-biblioteca" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Biblioteca</button></li>
+        <li><button data-goto="view-patrimonio" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Patrimonio</button></li>
+        <li><button data-goto="view-eventos" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Eventos</button></li>
+        <li><button data-goto="view-donaciones" style="background:none;border:none;color:inherit;padding:0;font-size:.85rem;opacity:.85;cursor:pointer;">Donaciones</button></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <ul>
+        <li>hola@facca.org</li>
+        <li>Limón, Costa Rica</li>
+        <li>+506 0000 0000</li>
+      </ul>
+    </div>
+    <div>
+      <h4>Boletín</h4>
+      <p style="font-size:.82rem;color:#cfc4ab;max-width:24ch;">Recibí novedades sobre patrimonio y eventos.</p>
+      <form class="newsletter-form" id="newsletterForm">
+        <label for="newsletterEmail" style="position:absolute;left:-9999px;">Correo electrónico</label>
+        <input id="newsletterEmail" type="email" required placeholder="tu@correo.com" autocomplete="email">
+        <button type="submit">Suscribirme</button>
+      </form>
+      <p class="newsletter-msg" id="newsletterMsg" role="status">¡Listo! Ya estás suscrito.</p>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 FAC CA — Raíces de Limón</span>
+    <span class="credit">Creado por Deisy Estrada Cortés | 2026</span>
+  </div>
+</footer>
+
+<div id="modal-overlay">
+  <div class="modal-box" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar">✕</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const palette = ['var(--verde)','var(--amarillo)','var(--rojo)','var(--turquesa)','var(--coral)','var(--menta)'];
+
+function avatarSVG(seed, c1, c2){
+  return `<svg viewBox="0 0 100 100"><rect width="100" height="100" fill="${c1}"/>
+  <circle cx="50" cy="40" r="22" fill="${c2}"/>
+  <path d="M15 100 C15 70 30 58 50 58 C70 58 85 70 85 100 Z" fill="${c2}"/>
+  <path d="M50 18 C36 18 30 28 30 36 C40 32 60 32 70 36 C70 28 64 18 50 18Z" fill="var(--negro)" opacity=".85"/>
+  </svg>`;
+}
+
+const galleryItems = [
+  {t:'Comparsa de calle', tag:'Baile', tilt:'-1.5deg', c:['var(--rojo)','var(--amarillo)'], story:'Las comparsas llenan las calles de Limón de color y ritmo. Cada paso de baile transmite una historia de comunidad transmitida de generación en generación.'},
+  {t:'Tambores y calipso', tag:'Música', tilt:'1deg', c:['var(--verde)','var(--turquesa)'], story:'El calipso limonense mezcla percusión, guitarra e improvisación lírica. Sus letras narran la vida cotidiana, el humor y la memoria colectiva de la provincia.'},
+  {t:'Manos que tejen', tag:'Artesanía', tilt:'-1deg', c:['var(--amarillo)','var(--coral)'], story:'El tejido y la cestería son oficios heredados en muchas familias limonenses, donde cada patrón de color cuenta algo sobre quien lo elabora.'},
+  {t:'Sabores de la costa', tag:'Gastronomía', tilt:'1.5deg', c:['var(--turquesa)','var(--menta)'], story:'El rice and beans, el pan bon y el patí forman parte de una cocina que mezcla raíces caribeñas con ingredientes locales.'},
+  {t:'Fiesta de agosto', tag:'Celebración', tilt:'-2deg', c:['var(--rojo)','var(--verde)'], story:'Cada agosto, Limón celebra su cultura afrocostarricense con desfiles, música y actividades comunitarias abiertas a todas las edades.'},
+  {t:'Historias de barrio', tag:'Tradición', tilt:'2deg', c:['var(--coral)','var(--amarillo)'], story:'Las personas mayores de la comunidad conservan relatos orales que conectan a los más jóvenes con la historia viva del Caribe costarricense.'},
+];
+const videoItems = [
+  {t:'Ritmos de la costa', tag:'Video', c:['var(--verde)','var(--amarillo)'], story:'Avance simulado de una pieza audiovisual sobre percusión y baile en la costa caribeña. En la versión final, este espacio reproducirá contenido real de la comunidad.'},
+  {t:'Voces del Caribe', tag:'Video', c:['var(--turquesa)','var(--coral)'], story:'Avance simulado de un documental corto con relatos de jóvenes gestores culturales de Limón.'},
+];
+
+function galleryArt(c1,c2){
+  return `<svg viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice"><rect width="200" height="150" fill="${c1}"/>
+  <path d="M0 110 C40 80 80 130 120 95 C150 70 180 100 200 85 L200 150 L0 150 Z" fill="${c2}"/>
+  <circle cx="150" cy="35" r="16" fill="var(--amarillo)" opacity=".9"/>
+  <path d="M20 60 C40 40 60 55 80 40" stroke="var(--negro)" stroke-width="2" fill="none" opacity=".4"/></svg>`;
+}
+
+function buildGallery(){
+  const grid = document.getElementById('galleryGrid');
+  galleryItems.forEach((it,i)=>{
+    const div = document.createElement('div');
+    div.className='frame'; div.style.setProperty('--tilt', it.tilt);
+    div.innerHTML = `<div class="art">${galleryArt(it.c[0],it.c[1])}</div><div class="cap"><b>${it.t}</b><span class="mono">${it.tag}</span></div>`;
+    div.addEventListener('click',()=>openModal(it.t, it.tag, it.story, galleryArt(it.c[0],it.c[1])));
+    grid.appendChild(div);
+  });
+  videoItems.forEach(it=>{
+    const div = document.createElement('div');
+    div.className='frame video-card';
+    div.innerHTML = `<div class="art">${galleryArt(it.c[0],it.c[1])}<div class="play-badge"><svg viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="rgba(255,255,255,.85)"/><path d="M24 20 L42 30 L24 40 Z" fill="var(--negro)"/></svg></div></div><div class="cap"><b>${it.t}</b><span class="mono">${it.tag}</span></div>`;
+    div.addEventListener('click',()=>openModal(it.t, it.tag, it.story, galleryArt(it.c[0],it.c[1])));
+    grid.appendChild(div);
+  });
+}
+
+const testimonios = [
+  {n:'Shirley Wilson', r:'Estudiante de secundaria', area:'Historia oral', q:'Aprender de mis abuelos me enseñó que la cultura no se hereda sola: se cuida todos los días.'},
+  {n:'Jerry Campbell', r:'Músico de calipso', area:'Música', q:'Cuando toco los tambores siento que hablo el mismo idioma que mis bisabuelos.'},
+  {n:'Nicole Thompson', r:'Artista visual', area:'Arte', q:'Pinto los colores del Caribe porque son la forma más honesta que tengo de contar de dónde vengo.'},
+  {n:'Marcus Duncan', r:'Cocinero comunitario', area:'Gastronomía', q:'Cada plato que preparo lleva una receta que pasó por muchas manos antes de llegar a las mías.'},
+  {n:'Yendry Foster', r:'Líder juvenil', area:'Liderazgo', q:'Esta plataforma nos da un lugar para contar nuestra historia con nuestras propias palabras.'},
+  {n:'Andre Robinson', r:'Bailarín', area:'Danza', q:'El cuerpo también recuerda: cada paso que aprendo conecta con generaciones anteriores.'},
+];
+function buildTestimonios(){
+  const grid = document.getElementById('testGrid');
+  testimonios.forEach((p,i)=>{
+    const c1 = palette[i % palette.length], c2 = palette[(i+2) % palette.length];
+    const div = document.createElement('div');
+    div.className='test-card';
+    div.innerHTML = `<div class="avatar">${avatarSVG(i,c1,c2)}</div>
+      <div class="who"><b>${p.n}</b><span class="mono">${p.r}</span></div>
+      <q>“${p.q}”</q>
+      <span class="disclaimer">Testimonio simulado para este prototipo</span>`;
+    grid.appendChild(div);
+  });
+}
+
+const artworks = [
+  {t:'Marea de identidad', tech:'Mural acrílico', c:['var(--rojo)','var(--amarillo)'], story:'Una composición inspirada en el movimiento del mar y en los patrones textiles afrocaribeños, pensada para espacios comunitarios.'},
+  {t:'Raíz tallada', tech:'Talla en madera', c:['var(--verde)','var(--negro)'], story:'Pieza que representa un sistema de raíces entrelazadas, símbolo de la memoria familiar que sostiene a las nuevas generaciones.'},
+  {t:'Tejido del Caribe', tech:'Arte textil', c:['var(--turquesa)','var(--coral)'], story:'Patrón geométrico inspirado en textiles caribeños, trabajado con técnicas de tejido tradicionales adaptadas a materiales locales.'},
+  {t:'Rostros de barrio', tech:'Fotografía documental', c:['var(--amarillo)','var(--verde)'], story:'Serie fotográfica conceptual sobre la vida cotidiana en los barrios afrodescendientes de Limón.'},
+  {t:'Vasija de memoria', tech:'Cerámica', c:['var(--coral)','var(--menta)'], story:'Pieza cerámica cuya forma se inspira en las vasijas usadas históricamente para preparar alimentos tradicionales.'},
+  {t:'Nueva generación', tech:'Ilustración digital', c:['var(--rojo)','var(--turquesa)'], story:'Ilustración contemporánea que representa el encuentro entre la tecnología y la tradición cultural afrocostarricense.'},
+];
+function artSVG(c1,c2){
+  return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${c1}"/>
+  <circle cx="60" cy="70" r="50" fill="${c2}" opacity=".9"/>
+  <rect x="110" y="90" width="80" height="80" fill="var(--negro)" opacity=".8"/>
+  <path d="M0 160 C60 130 140 190 200 150 L200 200 L0 200Z" fill="var(--amarillo)" opacity=".8"/></svg>`;
+}
+function buildArt(){
+  const grid = document.getElementById('artGrid');
+  artworks.forEach(a=>{
+    const div = document.createElement('div');
+    div.className='art-tile';
+    div.innerHTML = `<div class="canvas">${artSVG(a.c[0],a.c[1])}</div><div class="meta"><b>${a.t}</b><span>${a.tech}</span></div>`;
+    div.addEventListener('click',()=>openModal(a.t, a.tech, a.story, artSVG(a.c[0],a.c[1])));
+    grid.appendChild(div);
+  });
+}
+
+const libData = {
+  cultura:[
+    {t:'Calipso limonense', k:'Música', d:'Origen, estructura e importancia social del calipso como forma de narración popular.'},
+    {t:'Criollo limonense', k:'Lengua', d:'Características principales de esta lengua criolla de base inglesa hablada en la provincia.'},
+    {t:'Gastronomía caribeña', k:'Cocina', d:'Platillos representativos y su relación con la migración caribeña hacia Costa Rica.'},
+    {t:'Comparsas y carnaval', k:'Festividad', d:'Cómo se organizan las comparsas y qué representan dentro de la identidad limonense.'},
+  ],
+  derechos:[
+    {t:'Memoria y abolición', k:'Historia social', d:'Contexto general sobre la abolición de la esclavitud y su relación con la diáspora caribeña.'},
+    {t:'Movimientos por la igualdad', k:'Organización social', d:'Panorama de organizaciones afrodescendientes que han impulsado el reconocimiento de derechos en el país.'},
+    {t:'Marco legal costarricense', k:'Derecho', d:'Principios generales de reconocimiento de la diversidad étnica y cultural en la legislación nacional.'},
+    {t:'Voces comunitarias', k:'Testimonio', d:'Relatos comunitarios sobre la lucha histórica por el reconocimiento cultural y social.'},
+  ],
+  historia:[
+    {t:'Llegada al Caribe costarricense', k:'Siglo XIX', d:'Contexto de la migración afrocaribeña, principalmente de origen jamaiquino, hacia la costa atlántica.'},
+    {t:'Construcción del ferrocarril', k:'Historia económica', d:'El papel de la mano de obra afrodescendiente en la construcción del ferrocarril al Atlántico.'},
+    {t:'Desarrollo de la provincia', k:'Historia regional', d:'Cómo se fue consolidando Limón como centro económico, portuario y cultural del país.'},
+    {t:'Reconocimiento cultural', k:'Actualidad', d:'Avances recientes en el reconocimiento público de la cultura afrocostarricense.'},
+  ],
+};
+function buildLibrary(){
+  Object.keys(libData).forEach(key=>{
+    const container = document.getElementById('lib-'+key);
+    libData[key].forEach(item=>{
+      const div = document.createElement('div');
+      div.className='lib-card';
+      div.innerHTML = `<span class="mono">${item.k}</span><br><b>${item.t}</b><p>${item.d}</p>`;
+      container.appendChild(div);
+    });
+  });
+}
+
+/* ---------------- PATRIMONIO (nuevo) ---------------- */
+// Los elementos nuevos usan <img loading="lazy"> con el mismo estilo ilustrado del
+// resto del sitio (SVG generado como data-URI), cumpliendo el requisito de carga
+// diferida sin introducir fotografías externas sin licencia.
+function lazyArt(svgHTML, alt){
+  return `<img loading="lazy" decoding="async" alt="${alt}" src="data:image/svg+xml,${encodeURIComponent(svgHTML)}">`;
+}
+
+const patrimonioItems = [
+  {t:'Casa de la Cultura de Limón', cat:'Sitios', c:['var(--turquesa)','var(--menta)'], desc:'Edificio histórico donde se conservan archivos y objetos de la memoria comunitaria afrolimonense.'},
+  {t:'Recetario de pan bon', cat:'Culinario', c:['var(--amarillo)','var(--coral)'], desc:'Compilación de recetas tradicionales transmitidas de generación en generación en las cocinas de Limón.'},
+  {t:'Tambores tradicionales', cat:'Musical', c:['var(--verde)','var(--turquesa)'], desc:'Instrumentos de percusión centrales en el calipso limonense y en las comparsas de agosto.'},
+  {t:'Cestería de mimbre', cat:'Artesanía', c:['var(--coral)','var(--amarillo)'], desc:'Técnica de tejido heredada en muchas familias, usada históricamente para labores del hogar y la pesca.'},
+  {t:'Relatos de los abuelos', cat:'Oralidad', c:['var(--rojo)','var(--verde)'], desc:'Colección de historias orales que conectan a las nuevas generaciones con la memoria viva del Caribe.'},
+  {t:'Estación del Ferrocarril al Atlántico', cat:'Sitios', c:['var(--menta)','var(--turquesa)'], desc:'Vestigio de la infraestructura construida en gran parte por mano de obra afrodescendiente.'},
+];
+function buildPatrimonio(filter='todo'){
+  const grid = document.getElementById('patGrid');
+  grid.innerHTML = '';
+  patrimonioItems.filter(p => filter==='todo' || p.cat===filter).forEach(p=>{
+    const div = document.createElement('div');
+    div.className = 'pat-card';
+    div.innerHTML = `<div class="art">${lazyArt(galleryArt(p.c[0],p.c[1]), p.t)}</div>
+      <div class="body"><span class="cat">${p.cat}</span><h3>${p.t}</h3><p>${p.desc.slice(0,72)}…</p></div>`;
+    div.addEventListener('click', ()=> openModal(p.t, p.cat, p.desc, galleryArt(p.c[0],p.c[1])));
+    grid.appendChild(div);
+  });
+}
+document.querySelectorAll('#patChips .chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#patChips .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    buildPatrimonio(btn.dataset.cat);
+  });
+});
+
+/* ---------------- EVENTOS / CALENDARIO (nuevo) ---------------- */
+const eventosItems = [
+  {d:9, m:'Agosto', t:'Feria de la Persona Negra y la Cultura Afrocostarricense', loc:'Parque Vargas, Limón', cat:'Festival'},
+  {d:20, m:'Setiembre', t:'Taller de calipso para jóvenes', loc:'Casa de la Cultura, Limón', cat:'Taller'},
+  {d:4, m:'Octubre', t:'Ruta gastronómica del Caribe', loc:'Centro de Limón', cat:'Gastronomía'},
+  {d:18, m:'Octubre', t:'Conversatorio de historia oral', loc:'Biblioteca Pública de Limón', cat:'Conversatorio'},
+  {d:8, m:'Noviembre', t:'Exposición de arte afrocaribeño', loc:'Galería FAC CA', cat:'Exposición'},
+  {d:6, m:'Diciembre', t:'Concierto comunitario de fin de año', loc:'Plaza de Limón', cat:'Concierto'},
+];
+function buildAgenda(filter='todos'){
+  const list = document.getElementById('agendaList');
+  list.innerHTML = '';
+  eventosItems.filter(e => filter==='todos' || e.m===filter).forEach(e=>{
+    const div = document.createElement('div');
+    div.className = 'agenda-card';
+    div.innerHTML = `<div class="date-block"><span class="d">${e.d}</span><span class="m">${e.m.slice(0,3)}</span></div>
+      <div><span class="cat">${e.cat}</span><h3>${e.t}</h3><span class="loc">${e.loc}</span></div>
+      <button class="btn ghost">Más información</button>`;
+    div.querySelector('button').addEventListener('click', ()=> openModal(e.t, `${e.cat} · ${e.loc}`, `Actividad organizada por FAC CA. Fecha: ${e.d} de ${e.m}, 2026.`, galleryArt('var(--turquesa)','var(--amarillo)')));
+    list.appendChild(div);
+  });
+}
+document.querySelectorAll('#monthChips .chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#monthChips .chip').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    buildAgenda(btn.dataset.month);
+  });
+});
+
+/* ---------------- DONACIONES (nuevo) ---------------- */
+document.querySelectorAll('#amountRow .amount-chip').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#amountRow .amount-chip').forEach(b=>b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+  });
+});
+document.querySelectorAll('#payMethods .pay-method').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#payMethods .pay-method').forEach(b=>b.setAttribute('aria-pressed','false'));
+    btn.setAttribute('aria-pressed','true');
+  });
+});
+document.getElementById('donateSubmit').addEventListener('click', ()=>{
+  const amount = document.querySelector('#amountRow [aria-pressed="true"]');
+  const method = document.querySelector('#payMethods [aria-pressed="true"]');
+  const msg = document.getElementById('donateConfirm');
+  if(!amount || !method){
+    msg.textContent = 'Elegí un monto y un método de pago para continuar.';
+    msg.style.color = 'var(--rojo)';
+  } else {
+    msg.textContent = `Gracias por tu intención de donar ${amount.textContent} vía ${method.dataset.method}. (Demostración: no se procesó ningún pago real.)`;
+    msg.style.color = 'var(--verde)';
+  }
+  msg.classList.add('show');
+});
+
+/* ---------------- NEWSLETTER (nuevo) ---------------- */
+document.getElementById('newsletterForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  document.getElementById('newsletterMsg').classList.add('show');
+  e.target.reset();
+});
+
+/* ---------------- MODAL ---------------- */
+function openModal(title, tag, story, artHTML){
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-art">${artHTML}</div>
+    <span class="mono">${tag}</span>
+    <h3>${title}</h3>
+    <p>${story}</p>`;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+document.getElementById('modalClose').addEventListener('click', ()=> document.getElementById('modal-overlay').classList.remove('open'));
+document.getElementById('modal-overlay').addEventListener('click', (e)=>{ if(e.target.id==='modal-overlay') e.currentTarget.classList.remove('open'); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') document.getElementById('modal-overlay').classList.remove('open'); });
+
+/* ---------------- NAV / VIEWS ---------------- */
+function goTo(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById(id);
+  target.classList.add('active');
+  target.focus({preventScroll:true});
+  document.querySelectorAll('.nav-links button').forEach(b=> b.classList.toggle('active', b.dataset.goto===id));
+  document.getElementById('navLinks').classList.remove('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded','false');
+  history.replaceState(null, '', '#'+id.replace('view-',''));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click', ()=> goTo(el.dataset.goto)));
+document.getElementById('menuToggle').addEventListener('click', ()=>{
+  const nav = document.getElementById('navLinks');
+  nav.classList.toggle('open');
+  document.getElementById('menuToggle').setAttribute('aria-expanded', nav.classList.contains('open'));
+});
+
+/* ---------------- THEME ---------------- */
+document.querySelectorAll('.theme-dot').forEach(dot=>{
+  dot.addEventListener('click', ()=>{
+    document.documentElement.setAttribute('data-theme', dot.dataset.t);
+    document.querySelectorAll('.theme-dot').forEach(d=>d.classList.remove('active'));
+    dot.classList.add('active');
+  });
+});
+
+/* ---------------- TABS (Biblioteca) ---------------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.lib-grid').forEach(g=>g.classList.remove('active'));
+    document.getElementById('lib-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------------- FLOATING LEAVES ---------------- */
+function spawnLeaves(){
+  const field = document.getElementById('leaf-field');
+  const leafSVG = (c)=> `<svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 2C12 2 20 8 20 15C20 19.4 16.4 22 12 22C7.6 22 4 19.4 4 15C4 8 12 2 12 2Z" fill="${c}"/></svg>`;
+  const colors = ['var(--verde)','var(--amarillo)','var(--coral)','var(--turquesa)'];
+  for(let i=0;i<12;i++){
+    const el = document.createElement('div');
+    el.className='leaf';
+    el.style.left = (Math.random()*100)+'vw';
+    el.style.animationDuration = (14+Math.random()*14)+'s';
+    el.style.animationDelay = (Math.random()*-20)+'s';
+    el.innerHTML = leafSVG(colors[i%colors.length]);
+    field.appendChild(el);
+  }
+}
+
+/* ---------------- INIT ---------------- */
+buildGallery();
+buildTestimonios();
+buildArt();
+buildLibrary();
+buildPatrimonio();
+buildAgenda();
+spawnLeaves();
+
+const initialHash = location.hash.replace('#','');
+if(initialHash && document.getElementById('view-'+initialHash)) goTo('view-'+initialHash);
+</script>
+</body>
+</html>
