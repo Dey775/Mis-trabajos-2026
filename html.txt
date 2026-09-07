@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daisy Books – Biblioteca Digital</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* =========================================
+   CSS VARIABLES & RESET
+========================================= */
+:root {
+  --sky: #87CEEB;
+  --sky-light: #C8E8F5;
+  --sky-deep: #4AABE0;
+  --mint: #A8D8B0;
+  --green: #5BAD72;
+  --green-dark: #3A7D4E;
+  --warm: #F5E6C8;
+  --warm-gold: #E8C97A;
+  --warm-peach: #F2C4A0;
+  --petal: #FFFFFF;
+  --center: #F5D04A;
+  --text-dark: #1C2B22;
+  --text-mid: #3D5247;
+  --text-light: #6B8F76;
+  --bg: #F7F3ED;
+  --bg-alt: #EDF5F0;
+  --shadow: 0 8px 40px rgba(28,43,34,0.10);
+  --shadow-sm: 0 2px 12px rgba(28,43,34,0.08);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-dark);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--warm); }
+::-webkit-scrollbar-thumb { background: var(--green); border-radius: 3px; }
+
+/* =========================================
+   DAISY SVG ELEMENTS
+========================================= */
+.daisy-bg {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; overflow: hidden;
+}
+.floating-petal {
+  position: absolute;
+  opacity: 0.12;
+  animation: floatPetal linear infinite;
+}
+@keyframes floatPetal {
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.12; }
+  90% { opacity: 0.08; }
+  100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+}
+
+/* =========================================
+   MODAL OVERLAY
+========================================= */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(28,43,34,0.55); backdrop-filter: blur(8px);
+  z-index: 1000; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: var(--petal); border-radius: var(--radius);
+  padding: 40px; max-width: 480px; width: 100%;
+  position: relative; animation: modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 24px 80px rgba(28,43,34,0.25);
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.85) translateY(30px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.modal-close {
+  position: absolute; top: 16px; right: 20px;
+  background: none; border: none; font-size: 24px;
+  color: var(--text-light); cursor: pointer; transition: var(--transition);
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.modal-close:hover { background: var(--bg-alt); color: var(--text-dark); }
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 600; color: var(--text-dark);
+  margin-bottom: 6px;
+}
+.modal-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 28px; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-mid); margin-bottom: 6px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px 16px; border: 1.5px solid #D5E8DA;
+  border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif;
+  font-size: 15px; background: var(--bg); color: var(--text-dark);
+  transition: var(--transition); outline: none;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--sky-deep); background: white;
+  box-shadow: 0 0 0 3px rgba(74,171,224,0.15);
+}
+.form-tabs { display: flex; gap: 0; margin-bottom: 28px; border-radius: var(--radius-sm); overflow: hidden; border: 1.5px solid #D5E8DA; }
+.form-tab {
+  flex: 1; padding: 12px; text-align: center; cursor: pointer;
+  font-size: 14px; font-weight: 500; transition: var(--transition);
+  color: var(--text-light); background: var(--bg);
+}
+.form-tab.active { background: var(--green); color: white; }
+.form-content { display: none; }
+.form-content.active { display: block; }
+
+/* =========================================
+   BUTTONS
+========================================= */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px 24px; border-radius: 50px; border: none;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500;
+  cursor: pointer; transition: var(--transition); text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--green), var(--green-dark));
+  color: white; box-shadow: 0 4px 20px rgba(91,173,114,0.35);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(91,173,114,0.45); }
+.btn-sky {
+  background: linear-gradient(135deg, var(--sky), var(--sky-deep));
+  color: white; box-shadow: 0 4px 20px rgba(135,206,235,0.40);
+}
+.btn-sky:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(74,171,224,0.45); }
+.btn-outline {
+  background: transparent; border: 2px solid var(--green); color: var(--green);
+}
+.btn-outline:hover { background: var(--green); color: white; }
+.btn-warm {
+  background: linear-gradient(135deg, var(--warm-gold), #d4a843);
+  color: var(--text-dark); font-weight: 600;
+  box-shadow: 0 4px 20px rgba(232,201,122,0.40);
+}
+.btn-warm:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,201,122,0.50); }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+.btn-full { width: 100%; }
+
+/* =========================================
+   HEADER / NAV
+========================================= */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(247,243,237,0.90); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(168,216,176,0.30);
+  padding: 0 24px;
+}
+.nav-inner {
+  max-width: 1300px; margin: 0 auto;
+  display: flex; align-items: center; gap: 32px; height: 70px;
+}
+.logo {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+  flex-shrink: 0;
+}
+.logo-icon {
+  width: 44px; height: 44px;
+  animation: logoSpin 20s linear infinite;
+}
+@keyframes logoSpin {
+  0%,100% { transform: rotate(0deg); }
+  50% { transform: rotate(15deg); }
+}
+.logo-text { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--text-dark); }
+.logo-text span { color: var(--green); }
+
+nav { display: flex; gap: 4px; align-items: center; flex: 1; }
+.nav-link {
+  padding: 8px 14px; border-radius: var(--radius-sm); text-decoration: none;
+  color: var(--text-mid); font-size: 14px; font-weight: 500; transition: var(--transition);
+  cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif;
+}
+.nav-link:hover, .nav-link.active { background: var(--bg-alt); color: var(--green); }
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  background: white; border: 1.5px solid #D5E8DA; border-radius: 50px;
+  padding: 8px 16px; transition: var(--transition); flex: 1; max-width: 320px;
+}
+.search-bar:focus-within { border-color: var(--sky-deep); box-shadow: 0 0 0 3px rgba(74,171,224,0.12); }
+.search-bar input {
+  border: none; background: none; outline: none; font-size: 14px;
+  color: var(--text-dark); flex: 1; font-family: 'DM Sans', sans-serif;
+}
+.search-bar input::placeholder { color: var(--text-light); }
+.search-icon { color: var(--text-light); font-size: 16px; flex-shrink: 0; }
+
+.cart-btn {
+  position: relative; background: none; border: none; cursor: pointer;
+  padding: 8px; border-radius: var(--radius-sm); transition: var(--transition);
+  font-size: 22px; color: var(--text-mid);
+}
+.cart-btn:hover { background: var(--bg-alt); color: var(--green); }
+.cart-badge {
+  position: absolute; top: 2px; right: 2px; width: 18px; height: 18px;
+  background: var(--green); color: white; font-size: 10px; font-weight: 700;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--bg);
+}
+
+.hamburger {
+  display: none; flex-direction: column; gap: 5px; background: none;
+  border: none; cursor: pointer; padding: 8px;
+}
+.hamburger span {
+  display: block; width: 24px; height: 2px; background: var(--text-dark);
+  border-radius: 2px; transition: var(--transition);
+}
+
+/* Mobile nav */
+.mobile-nav {
+  display: none; position: fixed; top: 70px; left: 0; right: 0;
+  background: var(--petal); z-index: 99; padding: 20px 24px;
+  border-bottom: 1px solid rgba(168,216,176,0.30);
+  box-shadow: var(--shadow); flex-direction: column; gap: 4px;
+}
+.mobile-nav.open { display: flex; }
+
+/* =========================================
+   HERO SECTION
+========================================= */
+.hero {
+  position: relative; z-index: 1;
+  min-height: 92vh; display: flex; align-items: center;
+  overflow: hidden;
+  background: linear-gradient(160deg, #EDF7F2 0%, #F0F8FF 40%, #FBF5E8 100%);
+}
+.hero-bg-circle {
+  position: absolute; border-radius: 50%;
+  animation: breathe 6s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.08); opacity: 0.9; }
+}
+.hero-circle-1 {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(135,206,235,0.25), transparent 70%);
+  top: -150px; right: -100px;
+}
+.hero-circle-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(168,216,176,0.30), transparent 70%);
+  bottom: -80px; left: -80px;
+  animation-delay: -3s;
+}
+.hero-inner {
+  max-width: 1300px; margin: 0 auto; padding: 80px 24px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  position: relative; z-index: 1;
+}
+.hero-label {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: white; border: 1px solid rgba(91,173,114,0.25);
+  border-radius: 50px; padding: 6px 16px; font-size: 13px; font-weight: 500;
+  color: var(--green); margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px, 5.5vw, 72px); font-weight: 300; line-height: 1.12;
+  color: var(--text-dark); margin-bottom: 20px;
+}
+.hero-title em { font-style: italic; color: var(--green); }
+.hero-subtitle {
+  font-size: 17px; color: var(--text-light); max-width: 440px;
+  margin-bottom: 36px; line-height: 1.7;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 40px; }
+.hero-stats { display: flex; gap: 36px; }
+.stat { text-align: left; }
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 600; color: var(--text-dark);
+  line-height: 1;
+}
+.stat-label { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+
+/* Hero visual */
+.hero-visual { display: flex; justify-content: center; align-items: center; position: relative; }
+.hero-daisy {
+  width: min(420px, 90vw); height: min(420px, 90vw);
+  animation: daisyFloat 5s ease-in-out infinite;
+  filter: drop-shadow(0 24px 64px rgba(91,173,114,0.25));
+}
+@keyframes daisyFloat {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-18px) rotate(6deg); }
+}
+.hero-book-card {
+  position: absolute; background: white; border-radius: var(--radius);
+  padding: 14px 18px; box-shadow: var(--shadow); display: flex;
+  align-items: center; gap: 12px; font-size: 13px; font-weight: 500;
+  animation: cardFloat 4s ease-in-out infinite;
+  border: 1px solid rgba(168,216,176,0.3);
+}
+@keyframes cardFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+.card-top-left { top: 20px; left: -30px; animation-delay: -1s; }
+.card-bottom-right { bottom: 20px; right: -30px; animation-delay: -2.5s; }
+
+/* =========================================
+   QUOTE STRIP
+========================================= */
+.quote-strip {
+  background: linear-gradient(135deg, var(--green-dark), var(--green));
+  padding: 40px 24px; position: relative; z-index: 1;
+  overflow: hidden;
+}
+.quote-strip::before {
+  content: '❝'; position: absolute; font-size: 160px; color: rgba(255,255,255,0.06);
+  font-family: 'Cormorant Garamond', serif; top: -20px; left: 40px;
+  line-height: 1;
+}
+.quote-inner {
+  max-width: 900px; margin: 0 auto; text-align: center;
+}
+.quote-text {
+  font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 3.5vw, 36px);
+  font-style: italic; color: white; line-height: 1.4; font-weight: 300;
+}
+.quote-author { color: rgba(255,255,255,0.70); font-size: 14px; margin-top: 12px; }
+.quote-dots { display: flex; gap: 8px; justify-content: center; margin-top: 20px; }
+.quote-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.35); cursor: pointer; transition: var(--transition);
+}
+.quote-dot.active { background: white; width: 22px; border-radius: 4px; }
+
+/* =========================================
+   SECTION STYLES
+========================================= */
+.section { padding: 80px 24px; position: relative; z-index: 1; }
+.section-alt { background: var(--bg-alt); }
+.section-inner { max-width: 1300px; margin: 0 auto; }
+.section-header { text-align: center; margin-bottom: 56px; }
+.section-tag {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 12px;
+  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--green); margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 48px); font-weight: 400; color: var(--text-dark);
+  line-height: 1.2;
+}
+.section-sub { color: var(--text-light); font-size: 16px; margin-top: 12px; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+/* =========================================
+   FILTER PILLS
+========================================= */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 40px; }
+.filter-pill {
+  padding: 8px 20px; border-radius: 50px; border: 1.5px solid #D5E8DA;
+  background: white; font-size: 13px; font-weight: 500; color: var(--text-mid);
+  cursor: pointer; transition: var(--transition);
+}
+.filter-pill:hover, .filter-pill.active {
+  background: var(--green); border-color: var(--green); color: white;
+}
+
+/* =========================================
+   BOOK CARDS
+========================================= */
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 28px; }
+.book-card {
+  background: white; border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow-sm); transition: var(--transition);
+  border: 1px solid rgba(168,216,176,0.20); cursor: pointer;
+}
+.book-card:hover { transform: translateY(-6px); box-shadow: var(--shadow); }
+.book-cover {
+  height: 200px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 60px;
+}
+.book-badge {
+  position: absolute; top: 12px; right: 12px; padding: 4px 10px;
+  border-radius: 50px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+}
+.badge-new { background: var(--sky-deep); color: white; }
+.badge-sale { background: #E05C5C; color: white; }
+.badge-free { background: var(--green); color: white; }
+.badge-audio { background: var(--warm-gold); color: var(--text-dark); }
+.book-info { padding: 16px; }
+.book-category { font-size: 11px; font-weight: 600; color: var(--sky-deep); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.book-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--text-dark); line-height: 1.25; margin-bottom: 4px; }
+.book-author { font-size: 12px; color: var(--text-light); margin-bottom: 10px; }
+.book-rating { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--warm-gold); margin-bottom: 10px; }
+.book-rating span { color: var(--text-light); }
+.book-price-row { display: flex; align-items: center; justify-content: space-between; }
+.book-price { font-weight: 600; color: var(--text-dark); font-size: 15px; }
+.book-price .usd { font-size: 12px; color: var(--text-light); font-weight: 400; margin-left: 4px; }
+.book-price.free { color: var(--green); }
+.book-actions { display: flex; gap: 6px; margin-top: 12px; }
+
+/* =========================================
+   FEATURED STRIP
+========================================= */
+.featured-strip {
+  display: grid; grid-template-columns: 1fr 1.4fr 1fr; gap: 24px;
+  align-items: center;
+}
+.featured-main {
+  background: linear-gradient(135deg, #1C2B22 0%, #2d4a35 100%);
+  border-radius: var(--radius); padding: 40px; color: white;
+  position: relative; overflow: hidden; grid-column: 2;
+}
+.featured-main::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.featured-tag { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; margin-bottom: 12px; }
+.featured-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 400; line-height: 1.2; margin-bottom: 12px; }
+.featured-author { opacity: 0.7; font-size: 14px; margin-bottom: 20px; }
+.featured-price { font-size: 28px; font-weight: 300; font-family: 'Cormorant Garamond', serif; }
+.featured-emoji { font-size: 80px; margin-bottom: 16px; display: block; }
+
+.featured-side { display: flex; flex-direction: column; gap: 24px; }
+.side-book {
+  background: white; border-radius: var(--radius); padding: 20px;
+  display: flex; gap: 16px; align-items: center;
+  box-shadow: var(--shadow-sm); border: 1px solid rgba(168,216,176,0.20);
+  transition: var(--transition); cursor: pointer;
+}
+.side-book:hover { transform: translateX(4px); box-shadow: var(--shadow); }
+.side-book-emoji { font-size: 40px; flex-shrink: 0; }
+.side-book-info .book-title { font-size: 15px; }
+
+/* =========================================
+   AUDIOBOOKS
+========================================= */
+.audio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+.audio-card {
+  background: white; border-radius: var(--radius); padding: 24px;
+  box-shadow: var(--shadow-sm); border: 1px solid rgba(135,206,235,0.25);
+  transition: var(--transition); cursor: pointer;
+}
+.audio-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.audio-header { display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+.audio-emoji { font-size: 48px; }
+.audio-waveform {
+  display: flex; align-items: flex-end; gap: 3px; height: 32px;
+  margin-bottom: 14px;
+}
+.wave-bar {
+  flex: 1; background: linear-gradient(to top, var(--sky-deep), var(--sky-light));
+  border-radius: 2px; animation: wave 1.2s ease-in-out infinite;
+}
+@keyframes wave {
+  0%,100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+}
+.audio-controls { display: flex; align-items: center; gap: 12px; }
+.play-btn {
+  width: 42px; height: 42px; background: linear-gradient(135deg, var(--sky), var(--sky-deep));
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer; color: white; font-size: 16px;
+  box-shadow: 0 4px 16px rgba(74,171,224,0.35); transition: var(--transition);
+  flex-shrink: 0;
+}
+.play-btn:hover { transform: scale(1.1); }
+.audio-time { font-size: 12px; color: var(--text-light); }
+.audio-progress {
+  height: 4px; background: var(--sky-light); border-radius: 2px;
+  margin: 12px 0; position: relative; cursor: pointer; overflow: hidden;
+}
+.audio-progress-bar {
+  height: 100%; background: linear-gradient(90deg, var(--sky), var(--sky-deep));
+  border-radius: 2px; transition: width 0.1s;
+}
+
+/* =========================================
+   RECOMMENDATIONS
+========================================= */
+.recs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.rec-card {
+  background: white; border-radius: var(--radius); padding: 24px;
+  text-align: center; box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(168,216,176,0.20); transition: var(--transition);
+  cursor: pointer;
+}
+.rec-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+.rec-emoji { font-size: 56px; margin-bottom: 12px; display: block; }
+.rec-tag {
+  display: inline-block; padding: 3px 10px; border-radius: 50px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+  background: var(--bg-alt); color: var(--text-light); margin-bottom: 8px;
+}
+.rec-reason { font-size: 13px; color: var(--text-light); margin-top: 8px; }
+
+/* =========================================
+   CART SIDEBAR
+========================================= */
+.cart-sidebar {
+  position: fixed; right: 0; top: 0; width: 380px; height: 100vh;
+  background: white; z-index: 200; box-shadow: -8px 0 40px rgba(28,43,34,0.12);
+  transform: translateX(100%); transition: var(--transition);
+  display: flex; flex-direction: column;
+}
+.cart-sidebar.open { transform: translateX(0); }
+.cart-head {
+  padding: 24px; border-bottom: 1px solid #EEE;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cart-head h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; }
+.cart-items { flex: 1; overflow-y: auto; padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+.cart-item {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 14px; background: var(--bg); border-radius: var(--radius-sm);
+}
+.cart-item-emoji { font-size: 36px; flex-shrink: 0; }
+.cart-item-name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+.cart-item-author { font-size: 12px; color: var(--text-light); margin-bottom: 6px; }
+.cart-item-price { font-weight: 600; color: var(--green); font-size: 15px; }
+.remove-item {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  color: var(--text-light); font-size: 18px; transition: var(--transition);
+  padding: 4px; border-radius: 4px;
+}
+.remove-item:hover { color: #E05C5C; background: rgba(224,92,92,0.08); }
+.cart-foot { padding: 20px 24px; border-top: 1px solid #EEE; }
+.cart-total { display: flex; justify-content: space-between; margin-bottom: 16px; align-items: center; }
+.cart-total span { font-size: 15px; color: var(--text-light); }
+.cart-total strong { font-size: 22px; font-family: 'Cormorant Garamond', serif; }
+.cart-empty { text-align: center; padding: 60px 20px; color: var(--text-light); }
+.cart-empty-icon { font-size: 64px; margin-bottom: 12px; }
+
+/* =========================================
+   QUOTES CAROUSEL
+========================================= */
+.quotes-section { background: linear-gradient(160deg, var(--warm), #FDF3E0); }
+.quotes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.quote-card {
+  background: white; border-radius: var(--radius); padding: 28px;
+  box-shadow: var(--shadow-sm); border-left: 4px solid var(--green);
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.quote-card::before {
+  content: '❝'; font-family: 'Cormorant Garamond', serif; font-size: 80px;
+  color: rgba(91,173,114,0.08); position: absolute; top: -8px; left: 16px;
+  line-height: 1;
+}
+.quote-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.quote-card p {
+  font-family: 'Cormorant Garamond', serif; font-size: 18px; font-style: italic;
+  line-height: 1.5; color: var(--text-dark); position: relative; z-index: 1;
+}
+.quote-card footer { font-size: 13px; color: var(--text-light); margin-top: 12px; font-style: normal; }
+
+/* =========================================
+   HOW IT WORKS
+========================================= */
+.steps-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.step-card { text-align: center; padding: 32px 20px; }
+.step-num {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sky-light), var(--sky));
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 20px; font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 600; color: var(--sky-deep);
+  box-shadow: 0 4px 16px rgba(135,206,235,0.3);
+}
+.step-icon { font-size: 32px; margin-bottom: 12px; }
+.step-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.step-desc { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+/* =========================================
+   PRICING BANNER
+========================================= */
+.currency-toggle {
+  display: flex; align-items: center; gap: 12px; justify-content: center;
+  margin-bottom: 40px;
+}
+.currency-label { font-size: 14px; font-weight: 500; color: var(--text-mid); }
+.toggle-switch {
+  position: relative; width: 52px; height: 28px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  position: absolute; inset: 0; background: var(--green);
+  border-radius: 14px; cursor: pointer; transition: var(--transition);
+}
+.toggle-thumb {
+  position: absolute; top: 4px; left: 4px; width: 20px; height: 20px;
+  background: white; border-radius: 50%; transition: var(--transition);
+  pointer-events: none;
+}
+.toggle-switch input:checked ~ .toggle-track { background: var(--sky-deep); }
+.toggle-switch input:checked ~ .toggle-thumb { transform: translateX(24px); }
+
+/* =========================================
+   FOOTER
+========================================= */
+footer {
+  background: linear-gradient(180deg, #1C2B22 0%, #0F1A13 100%);
+  color: rgba(255,255,255,0.80); padding: 60px 24px 30px;
+  position: relative; z-index: 1;
+}
+.footer-inner { max-width: 1300px; margin: 0 auto; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px; }
+.footer-brand { }
+.footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.footer-tagline { font-size: 14px; line-height: 1.7; opacity: 0.65; max-width: 280px; }
+.footer-col h4 {
+  font-weight: 600; font-size: 14px; color: white;
+  margin-bottom: 18px; letter-spacing: 0.5px;
+}
+.footer-links { display: flex; flex-direction: column; gap: 10px; }
+.footer-links a {
+  text-decoration: none; color: rgba(255,255,255,0.60); font-size: 14px;
+  transition: var(--transition); cursor: pointer;
+}
+.footer-links a:hover { color: var(--mint); }
+.footer-bottom {
+  padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-copy { font-size: 13px; opacity: 0.55; }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a {
+  font-size: 13px; color: rgba(255,255,255,0.50); text-decoration: none;
+  transition: var(--transition); cursor: pointer;
+}
+.footer-legal a:hover { color: var(--mint); }
+.footer-daisy { font-size: 24px; opacity: 0.4; }
+
+/* =========================================
+   TOAST NOTIFICATION
+========================================= */
+.toast-container { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.toast {
+  background: var(--text-dark); color: white; padding: 12px 24px;
+  border-radius: 50px; font-size: 14px; font-weight: 500;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 10px;
+  animation: toastIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  white-space: nowrap;
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.toast.out { animation: toastOut 0.3s ease forwards; }
+@keyframes toastOut {
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+/* =========================================
+   POLICY MODALS
+========================================= */
+.policy-content { max-height: 60vh; overflow-y: auto; }
+.policy-content h3 { font-family: 'Cormorant Garamond', serif; font-size: 20px; margin: 20px 0 8px; color: var(--text-dark); }
+.policy-content p { font-size: 14px; color: var(--text-mid); line-height: 1.7; margin-bottom: 12px; }
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 1024px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; text-align: center; }
+  .hero-subtitle { margin: 0 auto 36px; }
+  .hero-actions { justify-content: center; }
+  .hero-stats { justify-content: center; }
+  .hero-visual { order: -1; }
+  .card-top-left { left: 0; top: 0; }
+  .card-bottom-right { right: 0; bottom: 0; }
+  .featured-strip { grid-template-columns: 1fr 1fr; }
+  .featured-main { grid-column: auto; }
+  .featured-side:last-child { display: none; }
+  .recs-grid { grid-template-columns: repeat(2, 1fr); }
+  .quotes-grid { grid-template-columns: repeat(2, 1fr); }
+  .steps-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 768px) {
+  nav { display: none; }
+  .search-bar { display: none; }
+  .hamburger { display: flex; }
+  .featured-strip { grid-template-columns: 1fr; }
+  .featured-main { grid-column: auto; }
+  .recs-grid { grid-template-columns: 1fr; }
+  .quotes-grid { grid-template-columns: 1fr; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .cart-sidebar { width: 100%; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; text-align: center; }
+  .hero-book-card { display: none; }
+}
+@media (max-width: 480px) {
+  .steps-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-wrap: wrap; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Floating petals background -->
+<div class="daisy-bg" id="daisyBg"></div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Cart Sidebar -->
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-head">
+    <h3>🛒 Mi Carrito</h3>
+    <button class="modal-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <p>Tu carrito está vacío.<br>¡Agrega tus libros favoritos!</p>
+    </div>
+  </div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-total">
+      <span>Total</span>
+      <strong id="cartTotalText">₡0</strong>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="checkout()">Proceder al pago →</button>
+  </div>
+</div>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal('authModal')">✕</button>
+    <div class="modal-title">🌼 Bienvenido a Daisy Books</div>
+    <div class="modal-subtitle">Tu jardín de conocimiento te espera</div>
+    <div class="form-tabs">
+      <div class="form-tab active" onclick="switchTab('login')">Iniciar Sesión</div>
+      <div class="form-tab" onclick="switchTab('register')">Registrarse</div>
+    </div>
+    <div class="form-content active" id="loginForm">
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" placeholder="tu@correo.com" id="loginEmail">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" placeholder="••••••••" id="loginPass">
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:8px">Iniciar Sesión</button>
+      <p style="text-align:center;margin-top:14px;font-size:13px;color:var(--text-light)">
+        <a href="#" style="color:var(--green)">¿Olvidaste tu contraseña?</a>
+      </p>
+    </div>
+    <div class="form-content" id="registerForm">
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" placeholder="María García" id="regName">
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" placeholder="tu@correo.com" id="regEmail">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" placeholder="Mín. 8 caracteres" id="regPass">
+      </div>
+      <div class="form-group">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer">
+          <input type="checkbox" id="regTerms" style="width:auto;margin-top:2px">
+          Acepto los <a href="#" onclick="openModal('termsModal')" style="color:var(--green)">Términos y Condiciones</a>
+        </label>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="doRegister()">Crear Cuenta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Book Detail Modal -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-box" style="max-width:560px">
+    <button class="modal-close" onclick="closeModal('bookModal')">✕</button>
+    <div id="bookModalContent"></div>
+  </div>
+</div>
+
+<!-- Privacy Modal -->
+<div class="modal-overlay" id="privacyModal">
+  <div class="modal-box" style="max-width:600px">
+    <button class="modal-close" onclick="closeModal('privacyModal')">✕</button>
+    <div class="modal-title">🔒 Política de Privacidad</div>
+    <div class="modal-subtitle">Actualizada: enero 2026</div>
+    <div class="policy-content">
+      <h3>1. Datos que recopilamos</h3>
+      <p>En Daisy Books recopilamos información básica de registro como nombre, correo electrónico y preferencias de lectura. Esta información se utiliza exclusivamente para personalizar tu experiencia en nuestra plataforma.</p>
+      <h3>2. Uso de la información</h3>
+      <p>Tus datos son utilizados para gestionar tu cuenta, procesar pagos, enviar recomendaciones personalizadas y mejorar nuestros servicios. Nunca vendemos información personal a terceros.</p>
+      <h3>3. Seguridad</h3>
+      <p>Implementamos medidas de seguridad estándar de la industria, incluyendo cifrado SSL/TLS y almacenamiento seguro de contraseñas mediante hashing bcrypt.</p>
+      <h3>4. Cookies</h3>
+      <p>Utilizamos cookies esenciales para el funcionamiento del sitio y cookies de análisis para mejorar la experiencia. Puedes gestionar tus preferencias de cookies desde la configuración de tu navegador.</p>
+      <h3>5. Tus derechos</h3>
+      <p>Tienes derecho a acceder, corregir o eliminar tus datos personales en cualquier momento. Contáctanos en privacidad@daisybooks.cr para ejercer estos derechos.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal-overlay" id="termsModal">
+  <div class="modal-box" style="max-width:600px">
+    <button class="modal-close" onclick="closeModal('termsModal')">✕</button>
+    <div class="modal-title">📋 Términos y Condiciones</div>
+    <div class="modal-subtitle">Vigentes desde enero 2026</div>
+    <div class="policy-content">
+      <h3>1. Aceptación de términos</h3>
+      <p>Al utilizar Daisy Books, aceptas estos términos en su totalidad. Si no estás de acuerdo, por favor abstente de usar nuestros servicios.</p>
+      <h3>2. Licencias de contenido</h3>
+      <p>Los libros disponibles en nuestra plataforma están protegidos por derechos de autor. La compra otorga una licencia personal e intransferible para uso individual. El préstamo digital sigue el modelo de bibliotecas digitales bajo acuerdo con editoriales.</p>
+      <h3>3. Precios y pagos</h3>
+      <p>Los precios se muestran en colones costarricenses (₡) y dólares estadounidenses ($). El tipo de cambio se actualiza diariamente. Los pagos se procesan de forma segura.</p>
+      <h3>4. Uso aceptable</h3>
+      <p>Queda prohibida la reproducción, distribución o reventa del contenido adquirido. El uso es exclusivamente personal y no comercial.</p>
+      <h3>5. Modificaciones</h3>
+      <p>Daisy Books se reserva el derecho de modificar estos términos con previo aviso de 30 días a través del correo registrado.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Support Modal -->
+<div class="modal-overlay" id="supportModal">
+  <div class="modal-box" style="max-width:520px">
+    <button class="modal-close" onclick="closeModal('supportModal')">✕</button>
+    <div class="modal-title">💬 Soporte al Usuario</div>
+    <div class="modal-subtitle">Estamos aquí para ayudarte 🌼</div>
+    <div class="form-group">
+      <label>Asunto</label>
+      <select>
+        <option>Problema con mi cuenta</option>
+        <option>Error al leer un libro</option>
+        <option>Problema con pago</option>
+        <option>Devolver un libro prestado</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tu mensaje</label>
+      <textarea rows="4" placeholder="Describe tu problema o consulta..."></textarea>
+    </div>
+    <div style="display:flex;gap:12px">
+      <div style="flex:1;background:var(--bg-alt);border-radius:var(--radius-sm);padding:16px;text-align:center">
+        <div style="font-size:24px;margin-bottom:4px">📧</div>
+        <div style="font-size:12px;color:var(--text-light)">soporte@daisybooks.cr</div>
+      </div>
+      <div style="flex:1;background:var(--bg-alt);border-radius:var(--radius-sm);padding:16px;text-align:center">
+        <div style="font-size:24px;margin-bottom:4px">💬</div>
+        <div style="font-size:12px;color:var(--text-light)">Chat en vivo 9am–6pm</div>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-full" style="margin-top:16px" onclick="sendSupport()">Enviar mensaje</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="nav-inner">
+    <a href="#" class="logo" onclick="showSection('home')">
+      <svg class="logo-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="22" cy="22" r="6" fill="#F5D04A"/>
+        <ellipse cx="22" cy="10" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1"/>
+        <ellipse cx="22" cy="34" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1"/>
+        <ellipse cx="10" cy="22" rx="8" ry="4" fill="white" stroke="#E8C97A" stroke-width="1"/>
+        <ellipse cx="34" cy="22" rx="8" ry="4" fill="white" stroke="#E8C97A" stroke-width="1"/>
+        <ellipse cx="13.5" cy="13.5" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1" transform="rotate(45 13.5 13.5)"/>
+        <ellipse cx="30.5" cy="30.5" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1" transform="rotate(45 30.5 30.5)"/>
+        <ellipse cx="30.5" cy="13.5" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1" transform="rotate(-45 30.5 13.5)"/>
+        <ellipse cx="13.5" cy="30.5" rx="4" ry="8" fill="white" stroke="#E8C97A" stroke-width="1" transform="rotate(-45 13.5 30.5)"/>
+        <circle cx="22" cy="22" r="5.5" fill="#F5D04A"/>
+      </svg>
+      <span class="logo-text">Daisy <span>Books</span></span>
+    </a>
+
+    <nav>
+      <button class="nav-link" onclick="showSection('home')">Inicio</button>
+      <button class="nav-link" onclick="showSection('catalog')">Catálogo</button>
+      <button class="nav-link" onclick="showSection('audio')">Audiolibros</button>
+      <button class="nav-link" onclick="showSection('recs')">Para Ti</button>
+    </nav>
+
+    <div class="search-bar" style="flex:1;max-width:300px">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar libros, autores..." id="searchInput" oninput="handleSearch(this.value)">
+    </div>
+
+    <div class="nav-right">
+      <button class="cart-btn" onclick="toggleCart()">
+        🛒
+        <span class="cart-badge" id="cartBadge">0</span>
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('authModal')" id="loginBtn">Ingresar</button>
+      <button class="hamburger" onclick="toggleMobileNav()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <button class="nav-link" onclick="showSection('home');toggleMobileNav()">🏠 Inicio</button>
+  <button class="nav-link" onclick="showSection('catalog');toggleMobileNav()">📚 Catálogo</button>
+  <button class="nav-link" onclick="showSection('audio');toggleMobileNav()">🎧 Audiolibros</button>
+  <button class="nav-link" onclick="showSection('recs');toggleMobileNav()">⭐ Para Ti</button>
+  <div style="height:1px;background:#EEE;margin:8px 0"></div>
+  <button class="nav-link" onclick="openModal('authModal');toggleMobileNav()">👤 Ingresar</button>
+</div>
+
+<!-- =========================================
+   MAIN CONTENT
+========================================= -->
+<main id="mainContent">
+
+<!-- HOME SECTION -->
+<div id="section-home">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-circle hero-circle-1"></div>
+  <div class="hero-bg-circle hero-circle-2"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-label">🌼 Tu biblioteca digital favorita</div>
+      <h1 class="hero-title">
+        Donde cada página<br>es un <em>pétalo</em><br>que florece
+      </h1>
+      <p class="hero-subtitle">
+        Miles de libros, audiolibros y recursos educativos al alcance de tus manos. Lee, presta y descubre tu próxima historia favorita.
+      </p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="showSection('catalog')">📚 Explorar Catálogo</button>
+        <button class="btn btn-outline" onclick="openModal('authModal')">Comenzar gratis →</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat">
+          <div class="stat-num">12K+</div>
+          <div class="stat-label">Libros disponibles</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">850+</div>
+          <div class="stat-label">Audiolibros</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">48K</div>
+          <div class="stat-label">Lectores activos</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <svg class="hero-daisy" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="petalGrad" cx="50%" cy="50%">
+            <stop offset="0%" stop-color="#FFFFFF"/>
+            <stop offset="100%" stop-color="#E8F5EA"/>
+          </radialGradient>
+          <radialGradient id="centerGrad" cx="40%" cy="40%">
+            <stop offset="0%" stop-color="#FFE066"/>
+            <stop offset="100%" stop-color="#D4A843"/>
+          </radialGradient>
+          <filter id="softShadow">
+            <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(91,173,114,0.2)"/>
+          </filter>
+        </defs>
+        <!-- Petals layer 1 -->
+        <ellipse cx="200" cy="110" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" filter="url(#softShadow)"/>
+        <ellipse cx="200" cy="290" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" transform="rotate(180 200 200)"/>
+        <ellipse cx="110" cy="200" rx="55" ry="28" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" filter="url(#softShadow)"/>
+        <ellipse cx="290" cy="200" rx="55" ry="28" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5"/>
+        <!-- Petals layer 2 (diagonal) -->
+        <ellipse cx="141" cy="141" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" transform="rotate(-45 141 141)"/>
+        <ellipse cx="259" cy="141" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" transform="rotate(45 259 141)"/>
+        <ellipse cx="141" cy="259" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" transform="rotate(45 141 259)"/>
+        <ellipse cx="259" cy="259" rx="28" ry="55" fill="url(#petalGrad)" stroke="#C8E8D0" stroke-width="1.5" transform="rotate(-45 259 259)"/>
+        <!-- Center circle -->
+        <circle cx="200" cy="200" r="62" fill="url(#centerGrad)" filter="url(#softShadow)"/>
+        <!-- Book icon in center -->
+        <rect x="174" y="178" width="52" height="42" rx="4" fill="white" opacity="0.9"/>
+        <line x1="200" y1="178" x2="200" y2="220" stroke="#D4A843" stroke-width="2"/>
+        <line x1="180" y1="188" x2="198" y2="188" stroke="#A8D8B0" stroke-width="1.5"/>
+        <line x1="180" y1="196" x2="198" y2="196" stroke="#A8D8B0" stroke-width="1.5"/>
+        <line x1="180" y1="204" x2="198" y2="204" stroke="#A8D8B0" stroke-width="1.5"/>
+        <line x1="202" y1="188" x2="220" y2="188" stroke="#87CEEB" stroke-width="1.5"/>
+        <line x1="202" y1="196" x2="220" y2="196" stroke="#87CEEB" stroke-width="1.5"/>
+        <line x1="202" y1="204" x2="220" y2="204" stroke="#87CEEB" stroke-width="1.5"/>
+        <!-- Dots on petals -->
+        <circle cx="200" cy="100" r="4" fill="#A8D8B0" opacity="0.6"/>
+        <circle cx="200" cy="300" r="4" fill="#A8D8B0" opacity="0.6"/>
+        <circle cx="100" cy="200" r="4" fill="#87CEEB" opacity="0.6"/>
+        <circle cx="300" cy="200" r="4" fill="#87CEEB" opacity="0.6"/>
+      </svg>
+      <div class="hero-book-card card-top-left">
+        <span>📖</span>
+        <div>
+          <div style="font-weight:600;font-size:13px">Cien Años de Soledad</div>
+          <div style="font-size:11px;color:var(--text-light)">Gabriel García Márquez</div>
+        </div>
+      </div>
+      <div class="hero-book-card card-bottom-right">
+        <span>🎧</span>
+        <div>
+          <div style="font-weight:600;font-size:13px">El Principito</div>
+          <div style="font-size:11px;color:var(--sky-deep)">▶ Reproduciendo...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE STRIP -->
+<div class="quote-strip">
+  <div class="quote-inner">
+    <p class="quote-text" id="quoteText">"Un lector vive mil vidas antes de morir. Quien nunca lee, vive solo una."</p>
+    <div class="quote-author" id="quoteAuthor">— George R.R. Martin</div>
+    <div class="quote-dots" id="quoteDots"></div>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<section class="section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">⭐ Destacados del mes</div>
+      <h2 class="section-title">Libros que no puedes perderte</h2>
+    </div>
+    <div class="featured-strip">
+      <div class="featured-side">
+        <div class="side-book" onclick="openBook(0)">
+          <div class="side-book-emoji">🌍</div>
+          <div class="side-book-info">
+            <div class="book-category">Ficción</div>
+            <div class="book-title">El mundo de Sofía</div>
+            <div class="book-author">Jostein Gaarder</div>
+            <div class="book-price">₡4,500 <span class="usd">$8.50</span></div>
+          </div>
+        </div>
+        <div class="side-book" onclick="openBook(2)">
+          <div class="side-book-emoji">🌿</div>
+          <div class="side-book-info">
+            <div class="book-category">Autoayuda</div>
+            <div class="book-title">El poder del ahora</div>
+            <div class="book-author">Eckhart Tolle</div>
+            <div class="book-price">₡5,200 <span class="usd">$9.80</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="featured-main" onclick="openBook(5)">
+        <span class="featured-tag">🌼 Libro del Mes</span>
+        <span class="featured-emoji">🌸</span>
+        <div class="featured-title">Cien Años de Soledad</div>
+        <div class="featured-author">Gabriel García Márquez</div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:24px">
+          <div class="featured-price">₡7,800</div>
+          <div style="opacity:0.6;font-size:14px">$14.75</div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-warm btn-sm" onclick="event.stopPropagation();addToCart({emoji:'🌸',title:'Cien Años de Soledad',author:'García Márquez',price:7800,usd:14.75,type:'comprar'})">🛒 Comprar</button>
+          <button class="btn btn-sky btn-sm" onclick="event.stopPropagation();readBook('Cien Años de Soledad')">📖 Leer ahora</button>
+          <button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.4);color:white" onclick="event.stopPropagation();lendBook('Cien Años de Soledad')">📋 Prestar</button>
+        </div>
+      </div>
+
+      <div class="featured-side">
+        <div class="side-book" onclick="openBook(8)">
+          <div class="side-book-emoji">🚀</div>
+          <div class="side-book-info">
+            <div class="book-category">Ciencia Ficción</div>
+            <div class="book-title">Dune</div>
+            <div class="book-author">Frank Herbert</div>
+            <div class="book-price">₡6,900 <span class="usd">$13.00</span></div>
+          </div>
+        </div>
+        <div class="side-book" onclick="openBook(11)">
+          <div class="side-book-emoji">🦋</div>
+          <div class="side-book-info">
+            <div class="book-category">Infantil</div>
+            <div class="book-title">La Oruga Muy Hambrienta</div>
+            <div class="book-author">Eric Carle</div>
+            <div class="book-price text-green" style="color:var(--green)">Gratis 🎁</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section section-alt">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">🌼 ¿Cómo funciona?</div>
+      <h2 class="section-title">Simple como oler una margarita</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">👤</div>
+        <div class="step-title">Crea tu cuenta</div>
+        <div class="step-desc">Regístrate gratis en segundos y personaliza tu perfil lector con tus géneros favoritos.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🔍</div>
+        <div class="step-title">Descubre libros</div>
+        <div class="step-desc">Explora nuestro catálogo de 12,000+ títulos con recomendaciones inteligentes para ti.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">📖</div>
+        <div class="step-title">Lee, presta o compra</div>
+        <div class="step-desc">Elige cómo disfrutar: lectura online, préstamo digital de 14 días, o compra permanente.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <div class="step-icon">🌸</div>
+        <div class="step-title">Crece leyendo</div>
+        <div class="step-desc">Lleva tu registro de lecturas, comparte reseñas y descubre qué leer a continuación.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSPIRATIONAL QUOTES -->
+<section class="section quotes-section">
+  <div class="section-inner">
+    <div class="section-header">
+      <div class="section-tag">💬 Frases que inspiran</div>
+      <h2 class="section-title">Las palabras también florecen</h2>
+    </div>
+    <div class="quotes-grid">
+      <div class="quote-card">
+        <p>"No existe un barco que pueda navegar como un libro que nos lleva a tierras lejanas."</p>
+        <footer>— Emily Dickinson</footer>
+      </div>
+      <div class="quote-card">
+        <p>"Los libros son espejos: solo vemos en ellos lo que ya llevamos dentro."</p>
+        <footer>— Carlos Ruiz Zafón</footer>
+      </div>
+      <div class="quote-card">
+        <p>"Leer es soñar con los ojos abiertos, es volar sin moverse del suelo."</p>
+        <footer>— Daisy Books, 2026</footer>
+      </div>
+      <div class="quote-card">
+        <p>"Una página al día mantiene la ignorancia a raya y florece el alma."</p>
+        <footer>— Anónimo</footer>
+      </div>
+      <div class="quote-card">
+        <p>"Los libros son como las margaritas: siempre encuentran la forma de crecer hacia la luz."</p>
+        <footer>— Daisy Books, 2026</footer>
+      </div>
+      <div class="quote-card">
+        <p>"Quien lee mucho y anda mucho, ve mucho y sabe mucho."</p>
+        <footer>— Miguel de Cervantes</footer>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- end section-home -->
+
+<!-- CATALOG SECTION -->
+<div id="section-catalog" style="display:none">
+  <section class="section" style="padding-top:40px">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-tag">📚 Nuestro catálogo</div>
+        <h2 class="section-title">Todos los libros del jardín</h2>
+        <p class="section-sub">Filtra por categoría y encuentra tu próxima lectura favorita</p>
+      </div>
+
+      <!-- Currency toggle -->
+      <div class="currency-toggle">
+        <span class="currency-label">₡ Colones</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="currencyToggle" onchange="toggleCurrency()">
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+        <span class="currency-label">$ Dólares</span>
+      </div>
+
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-pill active" onclick="filterBooks('Todos', this)">🌼 Todos</button>
+        <button class="filter-pill" onclick="filterBooks('Infantil', this)">🧸 Infantil</button>
+        <button class="filter-pill" onclick="filterBooks('Educativo', this)">🎓 Educativo</button>
+        <button class="filter-pill" onclick="filterBooks('Novela', this)">📖 Novela</button>
+        <button class="filter-pill" onclick="filterBooks('Ficción', this)">🚀 Ficción</button>
+        <button class="filter-pill" onclick="filterBooks('Autoayuda', this)">🌱 Autoayuda</button>
+        <button class="filter-pill" onclick="filterBooks('Ciencia', this)">🔬 Ciencia</button>
+        <button class="filter-pill" onclick="filterBooks('Gratis', this)">🎁 Gratis</button>
+      </div>
+
+      <div class="books-grid" id="booksGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- AUDIO SECTION -->
+<div id="section-audio" style="display:none">
+  <section class="section" style="padding-top:40px">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-tag">🎧 Audiolibros</div>
+        <h2 class="section-title">Escucha mientras floreces</h2>
+        <p class="section-sub">Más de 850 títulos narrados por voces profesionales</p>
+      </div>
+      <div class="audio-grid" id="audioGrid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- RECS SECTION -->
+<div id="section-recs" style="display:none">
+  <section class="section" style="padding-top:40px">
+    <div class="section-inner">
+      <div class="section-header">
+        <div class="section-tag">⭐ Para ti</div>
+        <h2 class="section-title">Recomendaciones personalizadas</h2>
+        <p class="section-sub">Basadas en tus gustos y lecturas previas</p>
+      </div>
+      <div style="background:linear-gradient(135deg,var(--green-dark),var(--green));border-radius:var(--radius);padding:32px;margin-bottom:40px;color:white;display:flex;align-items:center;gap:24px;flex-wrap:wrap">
+        <div style="font-size:56px">🌼</div>
+        <div style="flex:1">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;margin-bottom:6px">Tu perfil lector</div>
+          <p style="opacity:0.8;font-size:15px">Inicia sesión para recibir recomendaciones 100% personalizadas basadas en tus géneros, autores favoritos y ritmo de lectura.</p>
+        </div>
+        <button class="btn btn-warm" onclick="openModal('authModal')">Personalizar ahora →</button>
+      </div>
+      <div class="recs-grid" id="recsGrid"></div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <svg width="36" height="36" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="22" r="6" fill="#F5D04A"/>
+            <ellipse cx="22" cy="10" rx="4" ry="8" fill="white" opacity="0.8"/>
+            <ellipse cx="22" cy="34" rx="4" ry="8" fill="white" opacity="0.8"/>
+            <ellipse cx="10" cy="22" rx="8" ry="4" fill="white" opacity="0.8"/>
+            <ellipse cx="34" cy="22" rx="8" ry="4" fill="white" opacity="0.8"/>
+            <ellipse cx="13.5" cy="13.5" rx="4" ry="8" fill="white" opacity="0.7" transform="rotate(45 13.5 13.5)"/>
+            <ellipse cx="30.5" cy="30.5" rx="4" ry="8" fill="white" opacity="0.7" transform="rotate(45 30.5 30.5)"/>
+            <ellipse cx="30.5" cy="13.5" rx="4" ry="8" fill="white" opacity="0.7" transform="rotate(-45 30.5 13.5)"/>
+            <ellipse cx="13.5" cy="30.5" rx="4" ry="8" fill="white" opacity="0.7" transform="rotate(-45 13.5 30.5)"/>
+            <circle cx="22" cy="22" r="5.5" fill="#F5D04A"/>
+          </svg>
+          <span style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:white">Daisy <span style="color:#A8D8B0">Books</span></span>
+        </div>
+        <p class="footer-tagline">Tu biblioteca digital donde cada libro es un pétalo de conocimiento y cada lectura hace florecer tu mente.</p>
+        <div style="display:flex;gap:12px;margin-top:20px">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition)" onmouseover="this.style.background='rgba(168,216,176,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📘</div>
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition)" onmouseover="this.style.background='rgba(168,216,176,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">📸</div>
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.08);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--transition)" onmouseover="this.style.background='rgba(168,216,176,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">🐦</div>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Explorar</h4>
+        <div class="footer-links">
+          <a onclick="showSection('catalog')">Catálogo de libros</a>
+          <a onclick="showSection('audio')">Audiolibros</a>
+          <a onclick="showSection('recs')">Recomendaciones</a>
+          <a onclick="showSection('catalog')">Libros infantiles</a>
+          <a onclick="showSection('catalog')">Educativos</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Mi cuenta</h4>
+        <div class="footer-links">
+          <a onclick="openModal('authModal')">Iniciar sesión</a>
+          <a onclick="openModal('authModal')">Crear cuenta</a>
+          <a onclick="toggleCart()">Mi carrito</a>
+          <a>Mis préstamos</a>
+          <a>Historial de lectura</a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Ayuda</h4>
+        <div class="footer-links">
+          <a onclick="openModal('supportModal')">Soporte</a>
+          <a onclick="openModal('privacyModal')">Política de privacidad</a>
+          <a onclick="openModal('termsModal')">Términos y condiciones</a>
+          <a>Preguntas frecuentes</a>
+          <a>Contacto</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Daisy Books. Todos los derechos reservados. 🌼</div>
+      <div class="footer-legal">
+        <a onclick="openModal('privacyModal')">Política de privacidad</a>
+        <a onclick="openModal('termsModal')">Términos y condiciones</a>
+        <a onclick="openModal('supportModal')">Soporte</a>
+      </div>
+      <div class="footer-daisy">🌼</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// =========================================
+// DATA
+// =========================================
+const books = [
+  { id:0, emoji:'🌍', title:'El mundo de Sofía', author:'Jostein Gaarder', category:'Educativo', price:4500, usd:8.50, rating:4.8, reviews:1240, type:'comprar', badge:'', desc:'Una fascinante introducción a la filosofía occidental a través de los ojos de una joven noruega.' },
+  { id:1, emoji:'🎭', title:'Hamlet', author:'William Shakespeare', category:'Novela', price:0, usd:0, rating:4.9, reviews:3200, type:'gratis', badge:'free', desc:'La obra maestra del teatro inglés sobre el príncipe de Dinamarca y su búsqueda de venganza.' },
+  { id:2, emoji:'🌿', title:'El poder del ahora', author:'Eckhart Tolle', category:'Autoayuda', price:5200, usd:9.80, rating:4.7, reviews:890, type:'comprar', badge:'new', desc:'Una guía espiritual para liberarte del pensamiento compulsivo y vivir en el presente.' },
+  { id:3, emoji:'🔬', title:'Breve historia del tiempo', author:'Stephen Hawking', category:'Ciencia', price:6100, usd:11.50, rating:4.9, reviews:4100, type:'comprar', badge:'', desc:'El universo explicado de forma accesible por el genio de la física teórica.' },
+  { id:4, emoji:'🐉', title:'El Hobbit', author:'J.R.R. Tolkien', category:'Ficción', price:5800, usd:10.95, rating:4.9, reviews:6700, type:'comprar', badge:'', desc:'La aventura épica del hobbit Bilbo Baggins en tierras de dragones y magos.' },
+  { id:5, emoji:'🌸', title:'Cien Años de Soledad', author:'Gabriel García Márquez', category:'Novela', price:7800, usd:14.75, rating:5.0, reviews:9800, type:'comprar', badge:'new', desc:'La obra cumbre del realismo mágico, saga de la familia Buendía en Macondo.' },
+  { id:6, emoji:'🦁', title:'El León, la Bruja y el Ropero', author:'C.S. Lewis', category:'Infantil', price:3200, usd:6.05, rating:4.8, reviews:2100, type:'comprar', badge:'', desc:'Las crónicas de Narnia comienzan con cuatro niños que descubren un mundo mágico.' },
+  { id:7, emoji:'🌱', title:'Hábitos Atómicos', author:'James Clear', category:'Autoayuda', price:6400, usd:12.10, rating:4.8, reviews:5400, type:'comprar', badge:'sale', desc:'Cómo construir buenos hábitos y romper los malos con cambios pequeños y consistentes.' },
+  { id:8, emoji:'🚀', title:'Dune', author:'Frank Herbert', category:'Ficción', price:6900, usd:13.00, rating:4.7, reviews:3800, type:'comprar', badge:'', desc:'La epopeya de ciencia ficción en el planeta desértico Arrakis, hogar de la melange.' },
+  { id:9, emoji:'📐', title:'Matemáticas para todos', author:'Varios autores', category:'Educativo', price:0, usd:0, rating:4.5, reviews:340, type:'gratis', badge:'free', desc:'Una introducción amena y visual a las matemáticas esenciales para la vida cotidiana.' },
+  { id:10, emoji:'🎨', title:'El arte de la vida creativa', author:'Julia Cameron', category:'Autoayuda', price:4800, usd:9.05, rating:4.6, reviews:720, type:'prestar', badge:'', desc:'Desbloquea tu creatividad interior con ejercicios prácticos y reflexiones profundas.' },
+  { id:11, emoji:'🦋', title:'La Oruga Muy Hambrienta', author:'Eric Carle', category:'Infantil', price:0, usd:0, rating:4.9, reviews:1500, type:'gratis', badge:'free', desc:'El clásico cuento infantil sobre una pequeña oruga con mucho apetito y su transformación.' },
+  { id:12, emoji:'🌊', title:'La isla misteriosa', author:'Julio Verne', category:'Novela', price:3800, usd:7.20, rating:4.6, reviews:890, type:'comprar', badge:'', desc:'Náufragos en una isla misteriosa descubren secretos que desafían toda lógica.' },
+  { id:13, emoji:'🧠', title:'Pensar rápido, pensar despacio', author:'Daniel Kahneman', category:'Ciencia', price:6800, usd:12.85, rating:4.8, reviews:3100, type:'prestar', badge:'new', desc:'Cómo funciona nuestra mente y los dos sistemas que guían nuestras decisiones.' },
+  { id:14, emoji:'⭐', title:'El Principito', author:'Antoine de Saint-Exupéry', category:'Infantil', price:2500, usd:4.75, rating:5.0, reviews:12000, type:'comprar', badge:'', desc:'El entrañable cuento filosófico que ha emocionado a generaciones enteras en todo el mundo.' },
+  { id:15, emoji:'🔮', title:'Harry Potter y la Piedra Filosofal', author:'J.K. Rowling', category:'Ficción', price:7200, usd:13.60, rating:5.0, reviews:15000, type:'comprar', badge:'sale', desc:'El inicio de la saga del joven mago que descubre que pertenece al mundo mágico.' },
+];
+
+const audiobooks = [
+  { emoji:'🎵', title:'El Alquimista', author:'Paulo Coelho', duration:'5h 32m', narrator:'Carlos Meneses', category:'Novela', price:4200, usd:7.95, progress:35 },
+  { emoji:'🌙', title:'Matar a un Ruiseñor', author:'Harper Lee', duration:'12h 17m', narrator:'Ana Sofía Mora', category:'Ficción', price:5500, usd:10.40, progress:0 },
+  { emoji:'⚡', title:'El Poder del Ahora', author:'Eckhart Tolle', duration:'7h 46m', narrator:'Luis Miguel Rojas', category:'Autoayuda', price:4900, usd:9.25, progress:68 },
+  { emoji:'🌿', title:'Cuentos de la Selva', author:'Horacio Quiroga', duration:'3h 20m', narrator:'Diego Vargas', category:'Infantil', price:0, usd:0, progress:0 },
+  { emoji:'🎸', title:'Steve Jobs', author:'Walter Isaacson', duration:'25h 4m', narrator:'Roberto Alvarado', category:'Biografía', price:7800, usd:14.75, progress:22 },
+  { emoji:'🌺', title:'Como el Agua para Chocolate', author:'Laura Esquivel', duration:'6h 15m', narrator:'María Fernanda Soto', category:'Novela', price:4600, usd:8.70, progress:0 },
+];
+
+const recommendations = [
+  { emoji:'🌟', title:'Siddhartha', author:'Hermann Hesse', category:'Filosofía', reason:'Porque te gustó El poder del ahora', price:3900, usd:7.40 },
+  { emoji:'🦅', title:'El vuelo del águila', author:'Krishnamurti', category:'Espiritualidad', reason:'Recomendado para lectores reflexivos', price:4100, usd:7.75 },
+  { emoji:'🌊', title:'El viejo y el mar', author:'Ernest Hemingway', category:'Novela', reason:'Clásico imperdible para ti', price:3200, usd:6.05 },
+  { emoji:'🔭', title:'Cosmos', author:'Carl Sagan', category:'Ciencia', reason:'Para mentes curiosas del universo', price:5900, usd:11.15 },
+  { emoji:'🎭', title:'Don Quijote de la Mancha', author:'Cervantes', category:'Clásico', reason:'Literatura en español esencial', price:6500, usd:12.30 },
+  { emoji:'🌸', title:'Flores para Algernon', author:'Daniel Keyes', category:'Ficción', reason:'Una historia que cambia vidas', price:4400, usd:8.30 },
+];
+
+const quotes = [
+  { text: '"Un lector vive mil vidas antes de morir. Quien nunca lee, vive solo una."', author: '— George R.R. Martin' },
+  { text: '"Los libros son como las flores del jardín: cuantos más cultivas, más hermoso se vuelve el mundo."', author: '— Daisy Books, 2026' },
+  { text: '"Una habitación sin libros es como un cuerpo sin alma."', author: '— Marco Tulio Cicerón' },
+  { text: '"Lee y conducirás, no leas y serás conducido."', author: '— Santa Teresa de Jesús' },
+  { text: '"Cada libro es un mundo nuevo que espera ser descubierto pétalo a pétalo."', author: '— Daisy Books, 2026' },
+];
+
+// =========================================
+// STATE
+// =========================================
+let cart = [];
+let useDollars = false;
+let currentQuote = 0;
+let currentFilter = 'Todos';
+let isLoggedIn = false;
+let userName = '';
+let playingAudio = null;
+
+// =========================================
+// INIT
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+  createFloatingPetals();
+  renderQuoteDots();
+  startQuoteRotation();
+  renderBooks('Todos');
+  renderAudiobooks();
+  renderRecommendations();
+  updateCart();
+});
+
+// =========================================
+// FLOATING PETALS
+// =========================================
+function createFloatingPetals() {
+  const container = document.getElementById('daisyBg');
+  const petals = ['🌼','🌸','🍃','🌿','✿'];
+  for (let i = 0; i < 14; i++) {
+    const el = document.createElement('div');
+    el.className = 'floating-petal';
+    el.textContent = petals[i % petals.length];
+    el.style.cssText = `
+      left: ${Math.random()*100}%;
+      font-size: ${16 + Math.random()*24}px;
+      animation-duration: ${12 + Math.random()*16}s;
+      animation-delay: ${-Math.random()*20}s;
+    `;
+    container.appendChild(el);
+  }
+}
+
+// =========================================
+// NAVIGATION
+// =========================================
+function showSection(name) {
+  ['home','catalog','audio','recs'].forEach(s => {
+    const el = document.getElementById('section-' + s);
+    if (el) el.style.display = s === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (name === 'catalog') renderBooks(currentFilter);
+}
+
+function toggleMobileNav() {
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+// =========================================
+// MODALS
+// =========================================
+function openModal(id) {
+  document.getElementById(id).classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', (e) => {
+    if (e.target === el) closeModal(el.id);
+  });
+});
+
+// =========================================
+// AUTH
+// =========================================
+function switchTab(tab) {
+  document.querySelectorAll('.form-tab').forEach((el,i) => {
+    el.classList.toggle('active', (tab==='login' && i===0) || (tab==='register' && i===1));
+  });
+  document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+  document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value;
+  const pass = document.getElementById('loginPass').value;
+  if (!email || !pass) { showToast('⚠️ Por favor completa todos los campos'); return; }
+  isLoggedIn = true;
+  userName = email.split('@')[0];
+  closeModal('authModal');
+  document.getElementById('loginBtn').textContent = '👤 ' + userName;
+  showToast('🌼 ¡Bienvenido de vuelta, ' + userName + '!');
+}
+
+function doRegister() {
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const pass = document.getElementById('regPass').value;
+  const terms = document.getElementById('regTerms').checked;
+  if (!name || !email || !pass) { showToast('⚠️ Por favor completa todos los campos'); return; }
+  if (pass.length < 8) { showToast('⚠️ La contraseña debe tener al menos 8 caracteres'); return; }
+  if (!terms) { showToast('⚠️ Debes aceptar los términos y condiciones'); return; }
+  isLoggedIn = true;
+  userName = name.split(' ')[0];
+  closeModal('authModal');
+  document.getElementById('loginBtn').textContent = '👤 ' + userName;
+  showToast('🌸 ¡Cuenta creada! Bienvenido a Daisy Books, ' + userName + '!');
+}
+
+// =========================================
+// BOOKS
+// =========================================
+function renderBooks(filter) {
+  const grid = document.getElementById('booksGrid');
+  if (!grid) return;
+  const filtered = filter === 'Todos' ? books :
+    filter === 'Gratis' ? books.filter(b => b.price === 0) :
+    books.filter(b => b.category === filter);
+  grid.innerHTML = filtered.map(book => bookCardHTML(book)).join('');
+}
+
+function bookCardHTML(book) {
+  const priceStr = book.price === 0 ? 'Gratis 🎁' :
+    useDollars ? `$${book.usd.toFixed(2)}` : `₡${book.price.toLocaleString()}`;
+  const badgeHTML = book.badge ? `<span class="book-badge badge-${book.badge}">${{new:'NUEVO',sale:'OFERTA',free:'GRATIS',audio:'AUDIO'}[book.badge]}</span>` : '';
+  const stars = '★'.repeat(Math.floor(book.rating)) + (book.rating % 1 ? '½' : '');
+  return `
+  <div class="book-card" onclick="openBook(${book.id})">
+    <div class="book-cover" style="background:${coverGradient(book.id)}">
+      <span style="font-size:64px">${book.emoji}</span>
+      ${badgeHTML}
+    </div>
+    <div class="book-info">
+      <div class="book-category">${book.category}</div>
+      <div class="book-title">${book.title}</div>
+      <div class="book-author">${book.author}</div>
+      <div class="book-rating">${stars} <span>(${book.reviews.toLocaleString()})</span></div>
+      <div class="book-price-row">
+        <div class="book-price ${book.price===0?'free':''}">${priceStr}</div>
+      </div>
+      <div class="book-actions">
+        ${book.price === 0
+          ? `<button class="btn btn-primary btn-sm" onclick="event.stopPropagation();readBook('${book.title}')">📖 Leer</button>`
+          : `<button class="btn btn-warm btn-sm" onclick="event.stopPropagation();addToCart(${JSON.stringify({emoji:book.emoji,title:book.title,author:book.author,price:book.price,usd:book.usd,type:'comprar'}).replace(/"/g,'&quot;')})">🛒 Comprar</button>
+             <button class="btn btn-sky btn-sm" onclick="event.stopPropagation();lendBook('${book.title}')">📋 Prestar</button>`
+        }
+      </div>
+    </div>
+  </div>`;
+}
+
+function coverGradient(id) {
+  const gradients = [
+    'linear-gradient(135deg,#C8E8F5,#87CEEB)',
+    'linear-gradient(135deg,#D4F5D8,#A8D8B0)',
+    'linear-gradient(135deg,#F5EBC8,#E8C97A)',
+    'linear-gradient(135deg,#F5C8D4,#E8A0B0)',
+    'linear-gradient(135deg,#C8D4F5,#A0B0E8)',
+    'linear-gradient(135deg,#F5D4C8,#E8B090)',
+    'linear-gradient(135deg,#D4F5F0,#A0E8D8)',
+    'linear-gradient(135deg,#F0F5C8,#D4E87A)',
+    'linear-gradient(135deg,#E8C8F5,#C890E8)',
+    'linear-gradient(135deg,#C8F5E8,#90E8C0)',
+  ];
+  return gradients[id % gradients.length];
+}
+
+function filterBooks(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderBooks(cat);
+}
+
+function openBook(id) {
+  const book = books[id];
+  if (!book) return;
+  const priceStr = book.price === 0 ? 'Gratis 🎁' : `₡${book.price.toLocaleString()} ($${book.usd.toFixed(2)})`;
+  document.getElementById('bookModalContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      <div style="width:80px;height:80px;border-radius:12px;background:${coverGradient(id)};display:flex;align-items:center;justify-content:center;font-size:44px;flex-shrink:0">${book.emoji}</div>
+      <div>
+        <div class="book-category">${book.category}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;line-height:1.2;margin-bottom:4px">${book.title}</div>
+        <div style="font-size:13px;color:var(--text-light)">${book.author}</div>
+      </div>
+    </div>
+    <p style="font-size:15px;color:var(--text-mid);line-height:1.7;margin-bottom:24px">${book.desc}</p>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--bg-alt);border-radius:var(--radius-sm);margin-bottom:20px">
+      <span style="font-size:13px;color:var(--text-light)">Precio</span>
+      <span style="font-weight:600;font-size:20px;color:${book.price===0?'var(--green)':'var(--text-dark)'}">${priceStr}</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      ${book.price === 0
+        ? `<button class="btn btn-primary btn-full" onclick="readBook('${book.title}');closeModal('bookModal')">📖 Leer ahora — Gratis</button>`
+        : `<button class="btn btn-warm" onclick="addToCart(${JSON.stringify({emoji:book.emoji,title:book.title,author:book.author,price:book.price,usd:book.usd,type:'comprar'}).replace(/"/g,'&quot;')});closeModal('bookModal')">🛒 Comprar</button>
+           <button class="btn btn-sky" onclick="readBook('${book.title}');closeModal('bookModal')">📖 Leer online</button>
+           <button class="btn btn-outline" onclick="lendBook('${book.title}');closeModal('bookModal')">📋 Prestar (14 días)</button>`
+      }
+    </div>
+  `;
+  openModal('bookModal');
+}
+
+function readBook(title) {
+  showToast('📖 Abriendo "' + title + '"...');
+  setTimeout(() => showToast('✅ ¡Disfruta tu lectura! 🌼'), 1500);
+}
+
+function lendBook(title) {
+  showToast('📋 "' + title + '" prestado por 14 días');
+}
+
+// =========================================
+// AUDIOBOOKS
+// =========================================
+function renderAudiobooks() {
+  const grid = document.getElementById('audioGrid');
+  if (!grid) return;
+  grid.innerHTML = audiobooks.map((audio, idx) => {
+    const bars = Array.from({length:20}, (_,i) => `
+      <div class="wave-bar" style="height:${20+Math.random()*80}%;animation-delay:${i*0.06}s"></div>
+    `).join('');
+    const priceStr = audio.price === 0 ? 'Gratis' : `₡${audio.price.toLocaleString()}`;
+    return `
+    <div class="audio-card">
+      <div class="audio-header">
+        <div class="audio-emoji">${audio.emoji}</div>
+        <div>
+          <div class="book-category">${audio.category}</div>
+          <div class="book-title">${audio.title}</div>
+          <div class="book-author">${audio.author}</div>
+          <div style="font-size:12px;color:var(--sky-deep);margin-top:4px">🎙️ ${audio.narrator}</div>
+        </div>
+      </div>
+      <div class="audio-waveform">${bars}</div>
+      <div class="audio-progress" onclick="scrubAudio(${idx}, event, this)">
+        <div class="audio-progress-bar" style="width:${audio.progress}%" id="audioBar${idx}"></div>
+      </div>
+      <div class="audio-controls">
+        <button class="play-btn" onclick="playAudio(${idx})" id="playBtn${idx}">▶</button>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--text-dark)">${audio.title}</div>
+          <div class="audio-time">⏱ ${audio.duration}</div>
+        </div>
+        <div style="font-weight:600;font-size:15px;color:${audio.price===0?'var(--green)':'var(--text-dark)'}">${priceStr}</div>
+      </div>
+      <div style="margin-top:12px;display:flex;gap:8px">
+        ${audio.price===0
+          ? `<button class="btn btn-primary btn-sm btn-full" onclick="playAudio(${idx})">🎧 Escuchar gratis</button>`
+          : `<button class="btn btn-warm btn-sm" onclick="addToCart({emoji:'${audio.emoji}',title:'${audio.title}',author:'${audio.author}',price:${audio.price},usd:${audio.usd},type:'audio'})">🛒 Comprar</button>
+             <button class="btn btn-sky btn-sm" onclick="playAudio(${idx})">▶ Vista previa</button>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function playAudio(idx) {
+  const btn = document.getElementById('playBtn' + idx);
+  if (playingAudio === idx) {
+    btn.textContent = '▶';
+    playingAudio = null;
+    showToast('⏸ Reproducción pausada');
+  } else {
+    if (playingAudio !== null) {
+      const prevBtn = document.getElementById('playBtn' + playingAudio);
+      if (prevBtn) prevBtn.textContent = '▶';
+    }
+    btn.textContent = '⏸';
+    playingAudio = idx;
+    showToast('🎧 Reproduciendo: ' + audiobooks[idx].title);
+  }
+}
+
+function scrubAudio(idx, e, el) {
+  const rect = el.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  document.getElementById('audioBar' + idx).style.width = pct + '%';
+}
+
+// =========================================
+// RECOMMENDATIONS
+// =========================================
+function renderRecommendations() {
+  const grid = document.getElementById('recsGrid');
+  if (!grid) return;
+  grid.innerHTML = recommendations.map(rec => `
+    <div class="rec-card" onclick="showToast('📖 Abriendo ${rec.title}...')">
+      <span class="rec-emoji">${rec.emoji}</span>
+      <div class="rec-tag">${rec.category}</div>
+      <div class="book-title" style="font-size:17px">${rec.title}</div>
+      <div class="book-author">${rec.author}</div>
+      <div class="rec-reason">${rec.reason}</div>
+      <div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <div style="font-weight:600;color:var(--green)">₡${rec.price.toLocaleString()}</div>
+        <div style="color:var(--text-light);font-size:13px">$${rec.usd.toFixed(2)}</div>
+      </div>
+      <button class="btn btn-primary btn-sm btn-full" style="margin-top:10px" onclick="event.stopPropagation();addToCart({emoji:'${rec.emoji}',title:'${rec.title}',author:'${rec.author}',price:${rec.price},usd:${rec.usd},type:'comprar'})">🛒 Agregar al carrito</button>
+    </div>
+  `).join('');
+}
+
+// =========================================
+// CART
+// =========================================
+function toggleCart() {
+  document.getElementById('cartSidebar').classList.toggle('open');
+}
+
+function addToCart(item) {
+  if (cart.find(c => c.title === item.title)) {
+    showToast('ℹ️ "' + item.title + '" ya está en tu carrito');
+    return;
+  }
+  cart.push(item);
+  updateCart();
+  showToast('✅ "' + item.title + '" agregado al carrito 🛒');
+  if (!document.getElementById('cartSidebar').classList.contains('open')) {
+    document.getElementById('cartSidebar').classList.add('open');
+    setTimeout(() => {}, 2000);
+  }
+}
+
+function removeFromCart(idx) {
+  const title = cart[idx].title;
+  cart.splice(idx, 1);
+  updateCart();
+  showToast('🗑️ "' + title + '" eliminado del carrito');
+}
+
+function updateCart() {
+  const badge = document.getElementById('cartBadge');
+  const items = document.getElementById('cartItems');
+  const foot = document.getElementById('cartFoot');
+  badge.textContent = cart.length;
+  if (cart.length === 0) {
+    items.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Tu carrito está vacío.<br>¡Agrega tus libros favoritos!</p></div>';
+    foot.style.display = 'none';
+  } else {
+    items.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div class="cart-item-emoji">${item.emoji}</div>
+        <div style="flex:1">
+          <div class="cart-item-name">${item.title}</div>
+          <div class="cart-item-author">${item.author}</div>
+          <div class="cart-item-price">₡${item.price.toLocaleString()} <span style="font-size:12px;color:var(--text-light);font-weight:400">$${item.usd.toFixed(2)}</span></div>
+          <div style="font-size:11px;color:var(--text-light);margin-top:2px">${item.type === 'audio' ? '🎧 Audiolibro' : item.type === 'prestar' ? '📋 Préstamo' : '📖 Compra'}</div>
+        </div>
+        <button class="remove-item" onclick="removeFromCart(${i})">✕</button>
+      </div>
+    `).join('');
+    const total = cart.reduce((s, i) => s + i.price, 0);
+    const totalUsd = cart.reduce((s, i) => s + i.usd, 0);
+    document.getElementById('cartTotalText').textContent = `₡${total.toLocaleString()} ($${totalUsd.toFixed(2)})`;
+    foot.style.display = 'block';
+  }
+}
+
+function checkout() {
+  showToast('💳 Procesando pago de ₡' + cart.reduce((s,i)=>s+i.price,0).toLocaleString() + '...');
+  setTimeout(() => {
+    cart = [];
+    updateCart();
+    document.getElementById('cartSidebar').classList.remove('open');
+    showToast('✅ ¡Compra exitosa! Disfruta tus libros 🌼');
+  }, 2000);
+}
+
+// =========================================
+// CURRENCY TOGGLE
+// =========================================
+function toggleCurrency() {
+  useDollars = document.getElementById('currencyToggle').checked;
+  renderBooks(currentFilter);
+  showToast(useDollars ? '💵 Mostrando precios en dólares ($)' : '₡ Mostrando precios en colones');
+}
+
+// =========================================
+// QUOTES
+// =========================================
+function renderQuoteDots() {
+  const dots = document.getElementById('quoteDots');
+  if (!dots) return;
+  dots.innerHTML = quotes.map((_, i) => `
+    <div class="quote-dot ${i===0?'active':''}" onclick="setQuote(${i})"></div>
+  `).join('');
+}
+
+function setQuote(idx) {
+  currentQuote = idx;
+  document.getElementById('quoteText').textContent = quotes[idx].text;
+  document.getElementById('quoteAuthor').textContent = quotes[idx].author;
+  document.querySelectorAll('.quote-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+}
+
+function startQuoteRotation() {
+  setInterval(() => {
+    currentQuote = (currentQuote + 1) % quotes.length;
+    setQuote(currentQuote);
+  }, 5000);
+}
+
+// =========================================
+// SEARCH
+// =========================================
+function handleSearch(val) {
+  if (val.trim().length < 2) return;
+  const q = val.toLowerCase();
+  const results = books.filter(b => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.category.toLowerCase().includes(q));
+  if (results.length > 0) {
+    showSection('catalog');
+    const grid = document.getElementById('booksGrid');
+    if (grid) grid.innerHTML = results.map(bookCardHTML).join('');
+  }
+}
+
+// =========================================
+// TOAST
+// =========================================
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('out');
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// =========================================
+// SUPPORT
+// =========================================
+function sendSupport() {
+  closeModal('supportModal');
+  showToast('💬 Mensaje enviado. Te responderemos pronto 🌼');
+}
+</script>
+</body>
+</html>L
