@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!-- ===================== ZONA SEO / METADATOS ===================== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Campus Virtual Excel – Aprende hojas de cálculo desde cero hasta nivel avanzado con lecciones interactivas, ejercicios prácticos y recursos descargables." />
+  <meta name="keywords" content="Excel, hojas de cálculo, campus virtual, curso Excel, fórmulas, tablas dinámicas" />
+  <meta name="author" content="DAM-2026" />
+  <!-- Open Graph -->
+  <meta property="og:title" content="Campus Virtual Excel | Aprende desde cero" />
+  <meta property="og:description" content="Domina Excel con nuestro campus virtual: fórmulas, gráficos, tablas dinámicas y más." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://campusvirtual-excel.edu" />
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Campus Virtual Excel",
+    "description": "Plataforma de enseñanza de Microsoft Excel",
+    "url": "https://campusvirtual-excel.edu"
+  }
+  </script>
+  <link rel="canonical" href="https://campusvirtual-excel.edu" />
+  <title>Campus Virtual Excel | Aprende Hojas de Cálculo</title>
+
+  <style>
+    /* ── TOKENS ────────────────────────────────── */
+    :root {
+      --verde-excel:   #1D6F42;   /* verde corporativo Excel */
+      --verde-claro:   #21A366;
+      --verde-suave:   #E8F5EE;
+      --gris-oscuro:   #1A1A2E;
+      --gris-medio:    #4A4A6A;
+      --gris-borde:    #D6E4DC;
+      --blanco:        #FFFFFF;
+      --acento:        #F9A825;   /* amarillo hoja cálculo */
+      --fuente-titulo: 'Segoe UI', 'Trebuchet MS', sans-serif;
+      --fuente-cuerpo: 'Georgia', serif;
+      --radio:         8px;
+      --sombra:        0 4px 18px rgba(29,111,66,.13);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--fuente-cuerpo);
+      color: var(--gris-oscuro);
+      background: #F7FBF8;
+      line-height: 1.7;
+    }
+
+    a { color: var(--verde-excel); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible { outline: 3px solid var(--acento); outline-offset: 3px; }
+
+    /* ── HEADER ────────────────────────────────── */
+    header {
+      background: var(--verde-excel);
+      color: var(--blanco);
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 68px;
+      gap: 1rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-family: var(--fuente-titulo);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--blanco);
+      letter-spacing: -.5px;
+    }
+
+    .logo-icon {
+      background: var(--blanco);
+      color: var(--verde-excel);
+      font-weight: 900;
+      font-size: 1rem;
+      width: 36px; height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 4px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.8rem;
+    }
+
+    nav a {
+      color: rgba(255,255,255,.88);
+      font-family: var(--fuente-titulo);
+      font-size: .92rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+
+    nav a:hover { color: var(--acento); text-decoration: none; }
+
+    .btn-nav {
+      background: var(--acento);
+      color: var(--gris-oscuro) !important;
+      padding: .4rem 1.1rem;
+      border-radius: var(--radio);
+      font-weight: 700 !important;
+    }
+
+    /* ── HERO ──────────────────────────────────── */
+    .hero {
+      background: linear-gradient(135deg, var(--verde-excel) 0%, var(--verde-claro) 100%);
+      color: var(--blanco);
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Cuadrícula decorativa tipo hoja de cálculo */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: rgba(255,255,255,.18);
+      border: 1px solid rgba(255,255,255,.35);
+      padding: .3rem 1rem;
+      border-radius: 99px;
+      font-size: .82rem;
+      font-family: var(--fuente-titulo);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 {
+      font-family: var(--fuente-titulo);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 span {
+      color: var(--acento);
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      opacity: .9;
+      max-width: 580px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      background: var(--acento);
+      color: var(--gris-oscuro);
+      font-family: var(--fuente-titulo);
+      font-weight: 700;
+      font-size: 1rem;
+      padding: .85rem 2.2rem;
+      border-radius: var(--radio);
+      box-shadow: 0 4px 16px rgba(249,168,37,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(249,168,37,.5);
+      text-decoration: none;
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,.2);
+    }
+
+    .stat-num {
+      font-size: 2rem;
+      font-weight: 800;
+      font-family: var(--fuente-titulo);
+      color: var(--acento);
+      display: block;
+    }
+
+    .stat-label {
+      font-size: .82rem;
+      opacity: .8;
+      font-family: var(--fuente-titulo);
+    }
+
+    /* ── LAYOUT PRINCIPAL ──────────────────────── */
+    .page-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    /* ── CONTENIDO PRINCIPAL ───────────────────── */
+    main {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .section-label {
+      font-family: var(--fuente-titulo);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--verde-claro);
+      margin-bottom: .5rem;
+    }
+
+    section h2 {
+      font-family: var(--fuente-titulo);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gris-oscuro);
+      margin-bottom: 1.2rem;
+      padding-bottom: .5rem;
+      border-bottom: 3px solid var(--verde-suave);
+    }
+
+    /* Módulos / cursos */
+    .modulos-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    article.modulo {
+      background: var(--blanco);
+      border: 1px solid var(--gris-borde);
+      border-radius: var(--radio);
+      padding: 1.4rem 1.2rem;
+      box-shadow: var(--sombra);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    article.modulo::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--verde-excel);
+    }
+
+    article.modulo:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(29,111,66,.18);
+    }
+
+    .modulo-nivel {
+      font-size: .72rem;
+      font-family: var(--fuente-titulo);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: .2rem .6rem;
+      border-radius: 99px;
+      display: inline-block;
+      margin-bottom: .8rem;
+    }
+
+    .nivel-basico    { background: #E8F5EE; color: var(--verde-excel); }
+    .nivel-intermedio{ background: #FFF8E1; color: #E65100; }
+    .nivel-avanzado  { background: #FCE4EC; color: #880E4F; }
+
+    article.modulo h3 {
+      font-family: var(--fuente-titulo);
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+
+    article.modulo p {
+      font-size: .88rem;
+      color: var(--gris-medio);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .modulo-meta {
+      font-size: .78rem;
+      font-family: var(--fuente-titulo);
+      color: var(--gris-medio);
+      display: flex;
+      gap: .8rem;
+    }
+
+    /* Sección temática genérica */
+    .temas-lista {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .8rem;
+    }
+
+    .temas-lista li {
+      display: flex;
+      align-items: flex-start;
+      gap: .8rem;
+      background: var(--blanco);
+      border: 1px solid var(--gris-borde);
+      border-radius: var(--radio);
+      padding: 1rem 1.2rem;
+      font-size: .93rem;
+    }
+
+    .temas-lista li .icono {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .temas-lista li strong {
+      display: block;
+      font-family: var(--fuente-titulo);
+      margin-bottom: .2rem;
+    }
+
+    /* ── SIDEBAR ───────────────────────────────── */
+    aside {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .widget {
+      background: var(--blanco);
+      border: 1px solid var(--gris-borde);
+      border-radius: var(--radio);
+      padding: 1.4rem;
+      box-shadow: var(--sombra);
+    }
+
+    .widget h3 {
+      font-family: var(--fuente-titulo);
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--verde-excel);
+      margin-bottom: 1rem;
+      padding-bottom: .5rem;
+      border-bottom: 2px solid var(--verde-suave);
+    }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .tag {
+      background: var(--verde-suave);
+      color: var(--verde-excel);
+      font-size: .78rem;
+      font-family: var(--fuente-titulo);
+      font-weight: 600;
+      padding: .25rem .7rem;
+      border-radius: 99px;
+    }
+
+    /* Newsletter */
+    .newsletter-form {
+      display: flex;
+      flex-direction: column;
+      gap: .7rem;
+    }
+
+    .newsletter-form input[type="email"] {
+      border: 1px solid var(--gris-borde);
+      border-radius: var(--radio);
+      padding: .6rem .9rem;
+      font-size: .9rem;
+      font-family: var(--fuente-cuerpo);
+      width: 100%;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .newsletter-form input[type="email"]:focus {
+      border-color: var(--verde-excel);
+    }
+
+    .btn-suscribir {
+      background: var(--verde-excel);
+      color: var(--blanco);
+      border: none;
+      border-radius: var(--radio);
+      padding: .65rem 1rem;
+      font-family: var(--fuente-titulo);
+      font-size: .9rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background .2s;
+    }
+
+    .btn-suscribir:hover { background: var(--verde-claro); }
+
+    /* Links útiles */
+    .links-lista {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .links-lista li::before { content: '→ '; color: var(--verde-excel); font-weight: 700; }
+    .links-lista a { font-size: .9rem; }
+
+    /* Anuncio */
+    .anuncio {
+      background: linear-gradient(135deg, var(--verde-excel), var(--verde-claro));
+      color: var(--blanco);
+      text-align: center;
+      padding: 1.4rem;
+      border-radius: var(--radio);
+    }
+
+    .anuncio p { font-size: .88rem; opacity: .9; margin-top: .4rem; }
+    .anuncio strong { font-family: var(--fuente-titulo); font-size: 1rem; }
+    .btn-anuncio {
+      display: inline-block;
+      margin-top: 1rem;
+      background: var(--acento);
+      color: var(--gris-oscuro);
+      font-family: var(--fuente-titulo);
+      font-weight: 700;
+      font-size: .85rem;
+      padding: .5rem 1.2rem;
+      border-radius: var(--radio);
+    }
+
+    /* ── FOOTER ────────────────────────────────── */
+    footer {
+      background: var(--gris-oscuro);
+      color: rgba(255,255,255,.75);
+      padding: 3rem 2rem 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-col h4 {
+      font-family: var(--fuente-titulo);
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--blanco);
+      margin-bottom: .9rem;
+    }
+
+    .footer-col p { font-size: .85rem; line-height: 1.6; }
+
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: .45rem; }
+    .footer-col ul a { color: rgba(255,255,255,.65); font-size: .85rem; transition: color .2s; }
+    .footer-col ul a:hover { color: var(--acento); text-decoration: none; }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: .78rem;
+      flex-wrap: wrap;
+      gap: .5rem;
+    }
+
+    .footer-redes { display: flex; gap: 1rem; }
+    .footer-redes a {
+      background: rgba(255,255,255,.1);
+      color: var(--blanco);
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: .8rem;
+      transition: background .2s;
+    }
+    .footer-redes a:hover { background: var(--verde-claro); text-decoration: none; }
+
+    /* ── RESPONSIVE ────────────────────────────── */
+    @media (max-width: 900px) {
+      .page-wrapper { grid-template-columns: 1fr; }
+      aside { order: -1; }
+      .modulos-grid { grid-template-columns: 1fr 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      .hero-stats { gap: 1.5rem; }
+      .modulos-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════ HEADER ══════════════════ -->
+  <header>
+    <div class="header-inner">
+      <a href="#inicio" class="logo" aria-label="Inicio Campus Virtual Excel">
+        <div class="logo-icon" aria-hidden="true">XL</div>
+        Campus<strong>Excel</strong>
+      </a>
+      <nav aria-label="Navegación principal">
+        <ul>
+          <li><a href="#cursos">Cursos</a></li>
+          <li><a href="#temas">Temas</a></li>
+          <li><a href="#recursos">Recursos</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+          <li><a href="#inscripcion" class="btn-nav">Inscríbete</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ══════════════════ HERO ══════════════════════ -->
+  <section class="hero" id="inicio" aria-label="Portada principal">
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Campus Virtual · DAM-2026</span>
+      <h1>Domina <span>Excel</span> y transforma tus datos en decisiones</h1>
+      <p>Aprende hojas de cálculo desde cero hasta nivel avanzado: fórmulas, gráficos, tablas dinámicas y automatización con macros.</p>
+      <a href="#cursos" class="hero-cta">Ver módulos del curso ↓</a>
+      <div class="hero-stats" aria-label="Estadísticas del campus">
+        <div>
+          <span class="stat-num">12</span>
+          <span class="stat-label">Módulos</span>
+        </div>
+        <div>
+          <span class="stat-num">48</span>
+          <span class="stat-label">Lecciones</span>
+        </div>
+        <div>
+          <span class="stat-num">300+</span>
+          <span class="stat-label">Estudiantes</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ CONTENIDO + SIDEBAR ════════ -->
+  <div class="page-wrapper">
+
+    <!-- ── MAIN ────────────────────────────── -->
+    <main id="contenido-principal">
+
+      <!-- Sección 1: Módulos del curso -->
+      <section id="cursos" aria-labelledby="cursos-titulo">
+        <p class="section-label">Plan de estudios</p>
+        <h2 id="cursos-titulo">Módulos del curso</h2>
+        <div class="modulos-grid">
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-basico">Básico</span>
+            <h3>Introducción a Excel</h3>
+            <p>Interfaz, libros, hojas, celdas y tipos de datos. El punto de partida para todo.</p>
+            <div class="modulo-meta">
+              <span>📖 4 lecciones</span>
+              <span>⏱ 2 h</span>
+            </div>
+          </article>
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-basico">Básico</span>
+            <h3>Fórmulas Esenciales</h3>
+            <p>SUMA, PROMEDIO, CONTAR, SI, BUSCARV y las operaciones más usadas en el trabajo.</p>
+            <div class="modulo-meta">
+              <span>📖 6 lecciones</span>
+              <span>⏱ 3 h</span>
+            </div>
+          </article>
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-intermedio">Intermedio</span>
+            <h3>Gráficos y Visualización</h3>
+            <p>Crea gráficos de barras, líneas, circulares y sparklines para comunicar datos.</p>
+            <div class="modulo-meta">
+              <span>📖 5 lecciones</span>
+              <span>⏱ 2.5 h</span>
+            </div>
+          </article>
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-intermedio">Intermedio</span>
+            <h3>Tablas Dinámicas</h3>
+            <p>Analiza grandes volúmenes de datos con PivotTables, segmentaciones y dashboards.</p>
+            <div class="modulo-meta">
+              <span>📖 6 lecciones</span>
+              <span>⏱ 4 h</span>
+            </div>
+          </article>
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-avanzado">Avanzado</span>
+            <h3>Fórmulas Avanzadas</h3>
+            <p>ÍNDICE, COINCIDIR, SUMAPRODUCTO, fórmulas matriciales y funciones de texto.</p>
+            <div class="modulo-meta">
+              <span>📖 7 lecciones</span>
+              <span>⏱ 5 h</span>
+            </div>
+          </article>
+
+          <article class="modulo">
+            <span class="modulo-nivel nivel-avanzado">Avanzado</span>
+            <h3>Macros y VBA</h3>
+            <p>Automatiza tareas repetitivas grabando macros y escribiendo código VBA básico.</p>
+            <div class="modulo-meta">
+              <span>📖 8 lecciones</span>
+              <span>⏱ 6 h</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Sección 2: Temas destacados -->
+      <section id="temas" aria-labelledby="temas-titulo">
+        <p class="section-label">¿Qué aprenderás?</p>
+        <h2 id="temas-titulo">Temas destacados</h2>
+        <ul class="temas-lista">
+          <li>
+            <span class="icono" aria-hidden="true">🔢</span>
+            <div>
+              <strong>Manejo de datos y formato condicional</strong>
+              Filtra, ordena y resalta información clave para tomar decisiones más rápidas.
+            </div>
+          </li>
+          <li>
+            <span class="icono" aria-hidden="true">📊</span>
+            <div>
+              <strong>Creación de dashboards interactivos</strong>
+              Diseña paneles de control profesionales que actualicen sus gráficos automáticamente.
+            </div>
+          </li>
+          <li>
+            <span class="icono" aria-hidden="true">🔗</span>
+            <div>
+              <strong>Conexión con fuentes de datos externas</strong>
+              Importa datos desde CSV, bases de datos y servicios web directamente a tu hoja.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Sección 3: Recursos descargables -->
+      <section id="recursos" aria-labelledby="recursos-titulo">
+        <p class="section-label">Material de apoyo</p>
+        <h2 id="recursos-titulo">Recursos descargables</h2>
+        <ul class="temas-lista">
+          <li>
+            <span class="icono" aria-hidden="true">📥</span>
+            <div>
+              <strong>Guía de atajos de teclado en Excel</strong>
+              Más de 80 combinaciones que aceleran tu flujo de trabajo diario.
+            </div>
+          </li>
+          <li>
+            <span class="icono" aria-hidden="true">📥</span>
+            <div>
+              <strong>Plantillas de presupuesto y finanzas</strong>
+              Hojas listas para usar en proyectos personales y empresariales.
+            </div>
+          </li>
+          <li>
+            <span class="icono" aria-hidden="true">📥</span>
+            <div>
+              <strong>Ejercicios prácticos por módulo</strong>
+              Archivos .xlsx con ejercicios resueltos y sin resolver para practicar.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+    </main>
+
+    <!-- ── SIDEBAR ──────────────────────────── -->
+    <aside aria-label="Panel lateral">
+
+      <!-- Widget SEO: Tags -->
+      <div class="widget">
+        <h3>Temas relacionados</h3>
+        <div class="tags" role="list">
+          <span class="tag" role="listitem">Excel Básico</span>
+          <span class="tag" role="listitem">Fórmulas</span>
+          <span class="tag" role="listitem">Tablas Dinámicas</span>
+          <span class="tag" role="listitem">VBA</span>
+          <span class="tag" role="listitem">Gráficos</span>
+          <span class="tag" role="listitem">Dashboards</span>
+          <span class="tag" role="listitem">Office 365</span>
+          <span class="tag" role="listitem">Automatización</span>
+        </div>
+      </div>
+
+      <!-- Links útiles -->
+      <div class="widget">
+        <h3>Enlaces útiles</h3>
+        <ul class="links-lista">
+          <li><a href="https://support.microsoft.com/excel" target="_blank" rel="noopener">Soporte oficial de Excel</a></li>
+          <li><a href="#cursos">Plan de estudios completo</a></li>
+          <li><a href="#recursos">Descargar plantillas</a></li>
+          <li><a href="#contacto">Hablar con un tutor</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="widget" id="inscripcion">
+        <h3>📬 Recibe novedades</h3>
+        <p style="font-size:.85rem;margin-bottom:.9rem;color:var(--gris-medio);">Suscríbete y recibe nuevas lecciones y recursos cada semana.</p>
+        <div class="newsletter-form">
+          <label for="email-newsletter" style="font-size:.82rem;font-family:var(--fuente-titulo)">Correo electrónico</label>
+          <input type="email" id="email-newsletter" name="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" />
+          <button type="button" class="btn-suscribir" onclick="alert('¡Gracias por suscribirte!')">Suscribirme gratis</button>
+        </div>
+      </div>
+
+      <!-- Anuncio / Promoción -->
+      <div class="anuncio" role="complementary" aria-label="Promoción especial">
+        <strong>🎓 Certificado Incluido</strong>
+        <p>Completa todos los módulos y obtén tu certificado de Excel validado por DAM-2026.</p>
+        <a href="#cursos" class="btn-anuncio">Comenzar ahora</a>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- ══════════════════ FOOTER ════════════════════ -->
+  <footer id="contacto">
+    <div class="footer-inner">
+      <div class="footer-grid">
+
+        <div class="footer-col">
+          <h4>Campus Virtual Excel</h4>
+          <p>Plataforma educativa especializada en Microsoft Excel. Aprende a tu ritmo con material actualizado y docentes certificados.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Sitemap</h4>
+          <ul>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#cursos">Módulos</a></li>
+            <li><a href="#temas">Temas</a></li>
+            <li><a href="#recursos">Recursos</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Términos de uso</a></li>
+            <li><a href="#">Política de privacidad</a></li>
+            <li><a href="#">Licencias de contenido</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contacto</h4>
+          <ul>
+            <li><a href="mailto:info@campusvirtualexcel.edu">info@campusvirtualexcel.edu</a></li>
+            <li><a href="tel:+50600000000">+506 0000-0000</a></li>
+            <li><a href="#">WhatsApp</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Campus Virtual Excel · DAM-2026 · Todos los derechos reservados</p>
+        <nav aria-label="Redes sociales" class="footer-redes">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">ig</a>
+          <a href="#" aria-label="YouTube">▶</a>
+          <a href="#" aria-label="LinkedIn">in</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
