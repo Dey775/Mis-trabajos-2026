@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuestas y Votaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12182B;
+    --ink-soft:#1B2340;
+    --ink-line: rgba(243,239,230,0.14);
+    --paper:#F3EFE6;
+    --paper-dim:#E7E0CF;
+    --red:#C1272D;
+    --red-dim: rgba(193,39,45,0.14);
+    --green:#2F6F4F;
+    --green-dim: rgba(47,111,79,0.14);
+    --graphite:#787D8A;
+    --graphite-soft:#9BA0AC;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--ink); color:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family:'Zilla Slab', serif; margin:0; letter-spacing:-0.01em; }
+  a{ color:inherit; }
+  .wrap{ max-width:1060px; margin:0 auto; padding:0 32px; }
+  ::selection{ background:var(--red); color:var(--paper); }
+
+  /* ---------- NAV ---------- */
+  nav{ position:sticky; top:0; z-index:50; background:rgba(18,24,43,0.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--ink-line); }
+  nav .wrap{ display:flex; align-items:center; justify-content:space-between; padding:18px 32px; }
+  .brand{ display:flex; align-items:center; gap:12px; }
+  .seal{ width:34px; height:34px; border-radius:50%; border:2px solid var(--red); display:flex; align-items:center; justify-content:center; font-family:'Zilla Slab',serif; font-weight:700; font-size:14px; color:var(--red); flex-shrink:0; }
+  .brand-text{ font-family:'Zilla Slab',serif; font-weight:600; font-size:17px; }
+  .brand-text small{ display:block; font-family:'IBM Plex Mono',monospace; font-weight:400; font-size:10.5px; letter-spacing:0.12em; color:var(--graphite-soft); text-transform:uppercase; margin-top:1px; }
+  .btn{ font-family:'IBM Plex Sans',sans-serif; font-size:14px; font-weight:600; padding:12px 22px; border-radius:5px; text-decoration:none; display:inline-block; border:1px solid transparent; cursor:pointer; transition:transform .15s, background .15s, border-color .15s, opacity .15s; }
+  .btn-primary{ background:var(--red); color:var(--paper); }
+  .btn-primary:hover{ transform:translateY(-1px); background:#a91f24; }
+  .btn-primary:disabled{ opacity:0.35; cursor:not-allowed; transform:none; }
+  .btn-ghost{ border-color:var(--ink-line); background:transparent; color:var(--paper); }
+  .btn-ghost:hover{ border-color:var(--graphite-soft); }
+
+  /* ---------- HERO ---------- */
+  header.hero{ padding:76px 0 64px; border-bottom:1px solid var(--ink-line); text-align:center; }
+  .eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--red); margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .eyebrow::before, .eyebrow::after{ content:''; width:20px; height:1px; background:var(--red); }
+  .hero h1{ font-size:44px; line-height:1.1; font-weight:700; color:var(--paper); }
+  .hero h1 em{ font-style:normal; color:var(--red); }
+  .hero p.lede{ margin:20px auto 0; font-size:16.5px; line-height:1.65; color:var(--graphite-soft); max-width:52ch; }
+  @media (max-width:520px){ .hero h1{ font-size:32px; } }
+
+  /* ---------- APP SECTION ---------- */
+  section{ padding:72px 0; border-bottom:1px solid var(--ink-line); }
+  .section-head{ margin-bottom:40px; max-width:56ch; }
+  .section-head h2{ font-size:28px; color:var(--paper); font-weight:600; }
+  .section-head p{ margin-top:12px; color:var(--graphite-soft); font-size:15px; line-height:1.6; }
+
+  .app-grid{ display:grid; grid-template-columns:340px 1fr; gap:36px; align-items:start; }
+  @media (max-width:860px){ .app-grid{ grid-template-columns:1fr; } }
+
+  .panel{ background:var(--ink-soft); border:1px solid var(--ink-line); border-radius:8px; padding:24px; position:sticky; top:88px; }
+  @media (max-width:860px){ .panel{ position:static; } }
+  .panel h3{ font-size:18px; font-weight:600; margin-bottom:18px; }
+
+  label.field{ display:block; font-size:12.5px; color:var(--graphite-soft); margin-bottom:14px; }
+  label.field span{ display:block; margin-bottom:6px; font-weight:500; }
+  input[type=text], input[type=number], input[type=datetime-local]{
+    width:100%; background:var(--paper); color:var(--ink); border:1px solid transparent;
+    border-radius:5px; padding:10px 12px; font-family:'IBM Plex Sans',sans-serif; font-size:14px;
+  }
+  input:focus{ outline:2px solid var(--red); outline-offset:1px; }
+
+  .option-input-row{ display:flex; gap:8px; margin-bottom:8px; }
+  .option-input-row input{ flex:1; }
+  .icon-btn{ width:38px; flex-shrink:0; background:transparent; border:1px solid var(--ink-line); color:var(--graphite-soft); border-radius:5px; cursor:pointer; font-size:16px; line-height:1; }
+  .icon-btn:hover{ border-color:var(--red); color:var(--red); }
+
+  .add-option-btn{ background:none; border:none; color:var(--red); font-size:13px; font-weight:600; cursor:pointer; padding:2px 0 18px; text-decoration:underline; }
+
+  .form-row-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:420px){ .form-row-2{ grid-template-columns:1fr; } }
+
+  .form-error{ font-size:13px; color:var(--red); margin:10px 0 0; min-height:16px; }
+  .form-success{ font-size:13px; color:var(--green); margin:10px 0 0; min-height:16px; }
+
+  /* voter bar */
+  .voter-bar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; background:var(--ink-soft); border:1px solid var(--ink-line); border-radius:8px; padding:14px 18px; margin-bottom:24px; }
+  .voter-bar label{ font-size:13px; color:var(--graphite-soft); display:flex; align-items:center; gap:10px; flex:1; min-width:220px; }
+  .voter-bar input{ width:auto; flex:1; max-width:220px; }
+  .voter-hint{ font-size:12px; color:var(--graphite); }
+
+  /* poll cards */
+  #pollsList{ display:flex; flex-direction:column; gap:20px; }
+  .poll-card{ background:var(--paper); color:var(--ink); border-radius:8px; padding:24px 24px 20px; box-shadow:0 20px 40px -22px rgba(0,0,0,0.5); }
+  .poll-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; margin-bottom:6px; }
+  .poll-head h4{ font-family:'Zilla Slab',serif; font-size:18px; font-weight:600; line-height:1.3; }
+  .status-tag{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; padding:4px 9px; border-radius:20px; background:var(--green-dim); color:var(--green); white-space:nowrap; flex-shrink:0; }
+  .status-tag.closed{ background:var(--red-dim); color:var(--red); }
+  .tag-group{ display:flex; gap:6px; flex-wrap:wrap; flex-shrink:0; }
+  .voted-tag{ font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; padding:4px 9px; border-radius:20px; background:rgba(18,24,43,0.08); color:var(--graphite); white-space:nowrap; }
+  .poll-meta{ font-size:12.5px; color:var(--graphite); margin-bottom:18px; }
+  .poll-meta span{ display:inline-block; margin-right:14px; }
+
+  .option-row{ position:relative; margin-bottom:10px; border:1px solid rgba(18,24,43,0.16); border-radius:5px; overflow:hidden; }
+  .option-fill{ position:absolute; inset:0; width:0%; background:var(--paper-dim); transition:width .6s cubic-bezier(.2,.8,.25,1); z-index:0; }
+  .option-row.voted-here .option-fill{ background:rgba(47,111,79,0.16); }
+  .option-content{ position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:11px 12px; }
+  .option-left{ display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+  .option-label{ font-weight:500; font-size:14px; }
+  .option-stats{ display:flex; align-items:center; gap:10px; flex-shrink:0; }
+  .option-pct{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--graphite); min-width:40px; text-align:right; }
+  .option-votes{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--graphite); min-width:52px; text-align:right; }
+  .option-row.voted-here .option-pct{ color:var(--green); font-weight:600; }
+
+  .vote-btn{ font-size:12.5px; font-weight:600; padding:7px 14px; border-radius:5px; border:1px solid var(--red); background:transparent; color:var(--red); cursor:pointer; transition:background .15s, color .15s, opacity .15s; }
+  .vote-btn:hover:not(:disabled){ background:var(--red); color:var(--paper); }
+  .vote-btn:disabled{ opacity:0.3; cursor:not-allowed; border-color:rgba(18,24,43,0.2); color:var(--graphite); }
+  .voted-mark{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--green); font-weight:600; }
+
+  .poll-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:16px; gap:12px; flex-wrap:wrap; }
+  .poll-note{ font-size:12.5px; min-height:16px; }
+  .poll-note.error{ color:var(--red); }
+  .poll-note.info{ color:var(--graphite); }
+  .close-btn{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--graphite); background:none; border:none; cursor:pointer; text-decoration:underline; padding:0; flex-shrink:0; }
+  .close-btn:hover{ color:var(--red); }
+
+  .empty-state{ font-size:14px; color:var(--graphite-soft); border:1px dashed var(--ink-line); border-radius:8px; padding:32px; text-align:center; }
+
+  /* ---------- REGLAMENTO ---------- */
+  .reglamento{ display:grid; grid-template-columns:1fr; gap:0; }
+  .articulo{ display:grid; grid-template-columns:64px 1fr; gap:20px; padding:22px 0; border-top:1px solid var(--ink-line); }
+  .articulo:last-child{ border-bottom:1px solid var(--ink-line); }
+  .articulo .num{ font-family:'Zilla Slab',serif; font-weight:700; font-size:28px; color:var(--red); line-height:1; }
+  .articulo h4{ font-family:'Zilla Slab',serif; font-size:16.5px; font-weight:600; color:var(--paper); margin-bottom:5px; }
+  .articulo p{ font-size:14px; line-height:1.6; color:var(--graphite-soft); margin:0; }
+
+  footer{ padding:44px 0; }
+  .footer-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .footer-row p{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--graphite); margin:0; }
+
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; scroll-behavior:auto !important; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand">
+      <div class="seal">EV</div>
+      <div class="brand-text">Encuestas &amp; Votos<small>Crea, vota, mira resultados</small></div>
+    </div>
+    <a href="#app" class="btn btn-ghost">Ir a la app</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Encuestas y votaciones</div>
+    <h1>Creá una encuesta.<br><em>Cada persona vota una sola vez.</em></h1>
+    <p class="lede">Definí las opciones, un límite de votos o una fecha de cierre. La app impide que alguien vote dos veces en la misma encuesta y calcula el porcentaje de cada opción al instante.</p>
+  </div>
+</header>
+
+<section id="app">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Crear y votar</h2>
+      <p>Todo lo de abajo funciona de verdad: creá una encuesta, votá con distintos nombres de usuario para probar que no se puede repetir el voto, y mirá cómo se cierra sola al llegar al límite.</p>
+    </div>
+
+    <div class="app-grid">
+      <div class="panel">
+        <h3>Nueva encuesta</h3>
+        <form id="pollForm">
+          <label class="field">
+            <span>Título de la encuesta</span>
+            <input type="text" id="pollTitle" placeholder="¿Cuál preferís...?" maxlength="140">
+          </label>
+
+          <div id="optionsWrap">
+            <div class="option-input-row">
+              <input type="text" class="option-input" placeholder="Opción 1" maxlength="80">
+            </div>
+            <div class="option-input-row">
+              <input type="text" class="option-input" placeholder="Opción 2" maxlength="80">
+            </div>
+          </div>
+          <button type="button" class="add-option-btn" id="addOption">+ Agregar opción</button>
+
+          <div class="form-row-2">
+            <label class="field">
+              <span>Fecha límite (opcional)</span>
+              <input type="datetime-local" id="pollDeadline">
+            </label>
+            <label class="field">
+              <span>Máximo de votos (opcional)</span>
+              <input type="number" id="pollMax" min="1" placeholder="ej: 50">
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;">Crear encuesta</button>
+          <p class="form-error" id="formError"></p>
+        </form>
+      </div>
+
+      <div>
+        <div class="voter-bar">
+          <label>
+            Votando como:
+            <input type="text" id="voterName" value="ana" maxlength="30">
+          </label>
+          <span class="voter-hint">Cambiá el nombre para simular a otra persona votando.</span>
+        </div>
+
+        <div id="pollsList"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reglamento">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Cómo funciona por dentro</h2>
+      <p>Las mismas cuatro reglas que aplicaría la API se están aplicando ahora mismo en esta página.</p>
+    </div>
+    <div class="reglamento">
+      <div class="articulo">
+        <div class="num">1</div>
+        <div><h4>Un usuario, un voto</h4><p>Cada encuesta recuerda quién ya votó. Si el mismo nombre intenta votar de nuevo, el voto no se registra y se avisa por qué.</p></div>
+      </div>
+      <div class="articulo">
+        <div class="num">2</div>
+        <div><h4>Cierre por cantidad de votos</h4><p>Si al crear la encuesta definiste un máximo, en cuanto se alcanza ese número la encuesta pasa a "cerrada" automáticamente.</p></div>
+      </div>
+      <div class="articulo">
+        <div class="num">3</div>
+        <div><h4>Cierre por fecha límite</h4><p>Si definiste una fecha, pasado ese momento la encuesta se cierra sola, aunque nadie la esté mirando en ese instante.</p></div>
+      </div>
+      <div class="articulo">
+        <div class="num">4</div>
+        <div><h4>Resultados siempre visibles</h4><p>Una encuesta cerrada deja de aceptar votos, pero sus resultados y porcentajes siguen disponibles para consultar.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <div class="brand">
+      <div class="seal" style="width:26px;height:26px;font-size:11px;">EV</div>
+      <p>Encuestas y Votaciones</p>
+    </div>
+    <p id="globalCount">0 encuestas creadas</p>
+  </div>
+  <div class="wrap" style="margin-top:16px;">
+    <p style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--graphite); margin:0;">
+      © 2026 Deisy Estrada Cortez. Esta obra está bajo una licencia
+      <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.es" target="_blank" rel="license noopener noreferrer" style="color:inherit;">
+        Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional (CC BY-NC-SA 4.0)
+      </a>.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---------- estado en memoria ---------- */
+  let polls = [];
+  let nextId = 1;
+
+  function uid(){ return 'p' + (nextId++); }
+
+  function makePoll(titulo, opcionesTexto, deadline, maxVotos){
+    return {
+      id: uid(),
+      titulo: titulo,
+      opciones: opcionesTexto.map((t,i)=>({ id:'o'+i, texto:t, votos:0 })),
+      votantes: new Set(),
+      deadline: deadline || null,
+      maxVotos: maxVotos || null,
+      estado: 'abierta',
+      note: { text:'', type:'' }
+    };
+  }
+
+  /* ---------- lógica de cierre ---------- */
+  function totalVotos(poll){
+    return poll.opciones.reduce((a,o)=>a+o.votos,0);
+  }
+
+  function checkClose(poll){
+    if(poll.estado === 'cerrada') return;
+    const total = totalVotos(poll);
+    if(poll.maxVotos && total >= poll.maxVotos){
+      poll.estado = 'cerrada';
+      return;
+    }
+    if(poll.deadline && new Date() >= poll.deadline){
+      poll.estado = 'cerrada';
+    }
+  }
+
+  function votar(poll, opcionId, usuario){
+    checkClose(poll);
+    const nombre = usuario.trim().toLowerCase();
+    if(!nombre){
+      poll.note = { text:'Escribí un nombre de usuario antes de votar.', type:'error' };
+      render();
+      return;
+    }
+    if(poll.estado === 'cerrada'){
+      poll.note = { text:'Esta encuesta está cerrada, ya no acepta votos.', type:'error' };
+      render();
+      return;
+    }
+    if(poll.votantes.has(nombre)){
+      poll.note = { text:'"' + usuario.trim() + '" ya votó en esta encuesta.', type:'error' };
+      render();
+      return;
+    }
+    const opcion = poll.opciones.find(o=>o.id === opcionId);
+    opcion.votos += 1;
+    poll.votantes.add(nombre);
+    poll.lastVoterOption = opcionId;
+    poll.lastVoter = nombre;
+    checkClose(poll);
+    poll.note = { text:'Voto registrado para "' + usuario.trim() + '".', type:'info' };
+    render();
+  }
+
+  function cerrarManual(poll){
+    poll.estado = 'cerrada';
+    poll.note = { text:'Encuesta cerrada manualmente.', type:'info' };
+    render();
+  }
+
+  /* ---------- render ---------- */
+  const pollsList = document.getElementById('pollsList');
+  const globalCount = document.getElementById('globalCount');
+
+  function fmtDate(d){
+    return d.toLocaleString('es-ES', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  }
+
+  function render(){
+    globalCount.textContent = polls.length + (polls.length === 1 ? ' encuesta creada' : ' encuestas creadas');
+
+    if(polls.length === 0){
+      pollsList.innerHTML = '<div class="empty-state">Todavía no creaste ninguna encuesta. Completá el título y las opciones en el formulario de la izquierda y tocá "Crear encuesta".</div>';
+      return;
+    }
+
+    const voterInput = document.getElementById('voterName');
+    const currentVoter = voterInput ? voterInput.value : '';
+
+    pollsList.innerHTML = polls.map(poll=>{
+      checkClose(poll);
+      const total = totalVotos(poll);
+      const closed = poll.estado === 'cerrada';
+      const votedByCurrent = poll.votantes.has(currentVoter.trim().toLowerCase());
+
+      const optionsHtml = poll.opciones.map(o=>{
+        const pct = total === 0 ? 0 : Math.round((o.votos/total)*1000)/10;
+        const isThisVote = votedByCurrent && poll.lastVoter === currentVoter.trim().toLowerCase() && poll.lastVoterOption === o.id;
+        const disableVote = closed || votedByCurrent;
+        return (
+          '<div class="option-row' + (isThisVote ? ' voted-here' : '') + '">' +
+            '<div class="option-fill" style="width:' + pct + '%"></div>' +
+            '<div class="option-content">' +
+              '<div class="option-left"><span class="option-label">' + escapeHtml(o.texto) + '</span></div>' +
+              '<div class="option-stats">' +
+                '<span class="option-votes">' + o.votos + ' voto' + (o.votos===1?'':'s') + '</span>' +
+                '<span class="option-pct">' + pct + '%</span>' +
+                (closed
+                  ? '<button class="vote-btn" disabled title="Esta encuesta está cerrada">Votar</button>'
+                  : votedByCurrent
+                    ? '<button class="vote-btn" disabled title="Ya votaste con este nombre de usuario">Votar</button>'
+                    : '<button class="vote-btn" data-poll="' + poll.id + '" data-option="' + o.id + '">Votar</button>'
+                ) +
+              '</div>' +
+            '</div>' +
+          '</div>'
+        );
+      }).join('');
+
+      const metaParts = [];
+      metaParts.push('<span>' + total + ' voto' + (total===1?'':'s') + ' en total</span>');
+      if(poll.maxVotos) metaParts.push('<span>límite: ' + poll.maxVotos + ' votos</span>');
+      if(poll.deadline) metaParts.push('<span>cierra: ' + fmtDate(poll.deadline) + '</span>');
+
+      const noteClass = poll.note.type === 'error' ? 'error' : 'info';
+      let noteText = poll.note.text || '';
+      if(!noteText && votedByCurrent && !closed){
+        noteText = 'Ya votaste como "' + currentVoter.trim() + '". Cambiá el nombre en "Votando como" (arriba) para simular a otra persona y votar de nuevo — la encuesta sigue abierta para los demás.';
+      }
+
+      return (
+        '<div class="poll-card">' +
+          '<div class="poll-head">' +
+            '<h4>' + escapeHtml(poll.titulo) + '</h4>' +
+            '<div class="tag-group">' +
+              (votedByCurrent && !closed ? '<span class="voted-tag">Vos ya votaste</span>' : '') +
+              '<span class="status-tag' + (closed ? ' closed' : '') + '">' + (closed ? 'Cerrada' : 'Abierta') + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="poll-meta">' + metaParts.join('') + '</div>' +
+          optionsHtml +
+          '<div class="poll-foot">' +
+            '<span class="poll-note ' + noteClass + '">' + escapeHtml(noteText) + '</span>' +
+            (closed ? '' : '<button class="close-btn" data-close="' + poll.id + '">cerrar encuesta ahora</button>') +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  /* ---------- eventos: votar / cerrar (delegación) ---------- */
+  pollsList.addEventListener('click', function(e){
+    const voteBtn = e.target.closest('.vote-btn');
+    if(voteBtn && !voteBtn.disabled){
+      const poll = polls.find(p=>p.id === voteBtn.dataset.poll);
+      const usuario = document.getElementById('voterName').value;
+      if(poll) votar(poll, voteBtn.dataset.option, usuario);
+      return;
+    }
+    const closeBtn = e.target.closest('.close-btn');
+    if(closeBtn){
+      const poll = polls.find(p=>p.id === closeBtn.dataset.close);
+      if(poll) cerrarManual(poll);
+    }
+  });
+
+  document.getElementById('voterName').addEventListener('input', render);
+
+  /* ---------- formulario: crear encuesta ---------- */
+  const form = document.getElementById('pollForm');
+  const optionsWrap = document.getElementById('optionsWrap');
+  const addOptionBtn = document.getElementById('addOption');
+  const formError = document.getElementById('formError');
+
+  addOptionBtn.addEventListener('click', function(){
+    const rows = optionsWrap.querySelectorAll('.option-input-row').length;
+    if(rows >= 8){ return; }
+    const row = document.createElement('div');
+    row.className = 'option-input-row';
+    row.innerHTML =
+      '<input type="text" class="option-input" placeholder="Opción ' + (rows+1) + '" maxlength="80">' +
+      '<button type="button" class="icon-btn" title="Quitar opción">&times;</button>';
+    optionsWrap.appendChild(row);
+    row.querySelector('.icon-btn').addEventListener('click', function(){
+      if(optionsWrap.querySelectorAll('.option-input-row').length > 2){
+        row.remove();
+      }
+    });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    formError.textContent = '';
+
+    const titulo = document.getElementById('pollTitle').value.trim();
+    const optionInputs = Array.from(optionsWrap.querySelectorAll('.option-input'));
+    const opciones = optionInputs.map(i=>i.value.trim()).filter(v=>v.length>0);
+    const deadlineRaw = document.getElementById('pollDeadline').value;
+    const maxRaw = document.getElementById('pollMax').value;
+
+    if(!titulo){
+      formError.textContent = 'Ponele un título a la encuesta.';
+      return;
+    }
+    if(opciones.length < 2){
+      formError.textContent = 'Necesitás al menos 2 opciones con texto.';
+      return;
+    }
+    let deadline = null;
+    if(deadlineRaw){
+      deadline = new Date(deadlineRaw);
+      if(deadline <= new Date()){
+        formError.textContent = 'La fecha límite tiene que ser en el futuro.';
+        return;
+      }
+    }
+    let maxVotos = null;
+    if(maxRaw){
+      maxVotos = parseInt(maxRaw, 10);
+      if(!Number.isInteger(maxVotos) || maxVotos < 1){
+        formError.textContent = 'El máximo de votos tiene que ser un número entero mayor a 0.';
+        return;
+      }
+    }
+
+    polls.unshift(makePoll(titulo, opciones, deadline, maxVotos));
+    form.reset();
+    optionsWrap.innerHTML =
+      '<div class="option-input-row"><input type="text" class="option-input" placeholder="Opción 1" maxlength="80"></div>' +
+      '<div class="option-input-row"><input type="text" class="option-input" placeholder="Opción 2" maxlength="80"></div>';
+    render();
+  });
+
+  /* revisa cierres por fecha límite cada 15s, incluso sin interacción */
+  setInterval(function(){
+    let changed = false;
+    polls.forEach(p=>{
+      const before = p.estado;
+      checkClose(p);
+      if(before !== p.estado) changed = true;
+    });
+    if(changed) render();
+  }, 15000);
+
+  render();
+})();
+</script>
+
+</body>
+</html>
